@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>羌藏耕牧智护 - AI赋能阿坝州生态种养与乡村经营平台</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body class="bg-white text-gray-800">
+
+  <!-- ========== 顶部导航栏 ========== -->
+  <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur border-b border-gray-100 z-50">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-2.5">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="#1A6B42"/>
+          <path d="M16 7L6 15l3 2v7h14v-7l3-2L16 7z" fill="white" opacity="0.9"/>
+          <circle cx="24" cy="9" r="4" fill="white" opacity="0.2"/>
+          <path d="M24 6.5v5M21.5 9h5" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <span class="text-lg font-bold text-primary">羌藏耕牧智护</span>
+      </a>
+      <!-- 导航链接 -->
+      <nav class="hidden md:flex items-center gap-6 text-sm text-gray-600">
+        <a href="#intro" class="hover:text-primary transition">平台介绍</a>
+        <a href="#tech" class="hover:text-primary transition">核心技术</a>
+        <a href="#features" class="hover:text-primary transition">功能展示</a>
+        <a href="#about" class="hover:text-primary transition">关于我们</a>
+      </nav>
+      <!-- 右侧按钮 -->
+      <div class="flex items-center gap-3">
+        <button id="lang-switch" class="lang-switch">藏文</button>
+        <a href="login.html" class="bg-primary text-white px-5 py-2 rounded-lg font-medium hover:opacity-90 transition text-sm">进入系统</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== Hero 区域 ========== -->
+  <section id="intro" class="pt-16 min-h-[600px] flex items-center" style="background: linear-gradient(135deg, #E8F5EE 0%, #FFFFFF 60%);">
+    <div class="max-w-7xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <h1 class="text-[28px] font-bold text-gray-900 leading-tight mb-4">
+          AI赋能阿坝州<span class="text-primary">"空天地一体化"</span><br>生态种养与乡村经营公益平台
+        </h1>
+        <p class="text-base text-gray-500 mb-8" data-zh="科技守护绿水青山，智慧点亮乡村振兴" data-bo="ལྟེ་གནས་གཙང་ཆུ་དང་རྩེ་མོ་སྲུང་སྐྱོབ།">科技守护绿水青山，智慧点亮乡村振兴</p>
+        <div class="flex gap-4">
+          <a href="login.html" class="bg-primary text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition flex items-center gap-2">
+            <i data-lucide="building-2" class="w-4 h-4"></i>
+            基层治理端
+          </a>
+          <a href="login.html" class="bg-white text-primary border border-primary px-6 py-3 rounded-lg font-medium hover:bg-primary-light transition flex items-center gap-2">
+            <i data-lucide="sprout" class="w-4 h-4"></i>
+            乡村经营端
+          </a>
+        </div>
+      </div>
+      <!-- Hero 装饰插画 -->
+      <div class="flex justify-center">
+        <svg width="380" height="300" viewBox="0 0 380 300" fill="none" class="opacity-90">
+          <!-- 山脉 -->
+          <path d="M0 240L60 160L100 200L140 120L190 180L230 100L280 170L320 130L380 180V300H0V240Z" fill="#E8F5EE"/>
+          <path d="M0 260L80 180L130 220L180 150L230 200L290 140L380 200V300H0V260Z" fill="#D1FAE5" opacity="0.7"/>
+          <!-- 雪山 -->
+          <path d="M200 80L250 160H150L200 80Z" fill="white" stroke="#1A6B42" stroke-width="1"/>
+          <path d="M190 100L200 80L210 100Z" fill="#E8F5EE"/>
+          <!-- 太阳/卫星 -->
+          <circle cx="300" cy="60" r="20" fill="#F39C12" opacity="0.2"/>
+          <circle cx="300" cy="60" r="12" fill="#F39C12" opacity="0.4"/>
+          <circle cx="300" cy="60" r="5" fill="#F39C12"/>
+          <line x1="300" y1="35" x2="300" y2="45" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="300" y1="75" x2="300" y2="85" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="275" y1="60" x2="285" y2="60" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="315" y1="60" x2="325" y2="60" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- 信号线 -->
+          <path d="M310 55L340 40" stroke="#1A6B42" stroke-width="1" stroke-dasharray="3 3"/>
+          <path d="M310 65L350 75" stroke="#1A6B42" stroke-width="1" stroke-dasharray="3 3"/>
+          <!-- 牦牛剪影 -->
+          <ellipse cx="120" cy="235" rx="25" ry="15" fill="#1A6B42" opacity="0.6"/>
+          <circle cx="100" cy="220" r="10" fill="#1A6B42" opacity="0.6"/>
+          <line x1="95" y1="228" x2="95" y2="250" stroke="#1A6B42" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+          <line x1="105" y1="228" x2="105" y2="250" stroke="#1A6B42" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+          <line x1="130" y1="228" x2="130" y2="250" stroke="#1A6B42" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+          <line x1="140" y1="228" x2="140" y2="250" stroke="#1A6B42" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+          <!-- 梯田 -->
+          <path d="M50 260Q90 250 130 260Q170 270 210 260" stroke="#1A6B42" stroke-width="1" fill="none" opacity="0.3"/>
+          <path d="M40 275Q80 265 120 275Q160 285 200 275" stroke="#1A6B42" stroke-width="1" fill="none" opacity="0.3"/>
+          <!-- 无人机 -->
+          <rect x="260" y="115" width="30" height="8" rx="4" fill="#1A6B42" opacity="0.5"/>
+          <circle cx="260" cy="115" r="6" fill="none" stroke="#1A6B42" stroke-width="1" opacity="0.5"/>
+          <circle cx="290" cy="115" r="6" fill="none" stroke="#1A6B42" stroke-width="1" opacity="0.5"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 核心能力展示 ========== -->
+  <section id="tech" class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-center text-2xl font-bold text-gray-900 mb-12">核心技术能力</h2>
+      <div class="grid md:grid-cols-4 gap-6">
+        <!-- 卡片1 -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+          <div class="h-2 bg-primary"></div>
+          <div class="p-6">
+            <div class="w-12 h-12 rounded-xl bg-primary-light flex items-center justify-center mb-4">
+              <i data-lucide="satellite" class="w-6 h-6 text-primary"></i>
+            </div>
+            <h3 class="font-semibold text-gray-800 mb-2">空天地一体化监控</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">北斗卫星遥感 + 多光谱无人机巡航 + 地面物联网传感器，实现全域实时监控</p>
+          </div>
+        </div>
+        <!-- 卡片2 -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+          <div class="h-2 bg-primary"></div>
+          <div class="p-6">
+            <div class="w-12 h-12 rounded-xl bg-primary-light flex items-center justify-center mb-4">
+              <i data-lucide="brain" class="w-6 h-6 text-primary"></i>
+            </div>
+            <h3 class="font-semibold text-gray-800 mb-2">AI 智能种养</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">腾讯云大模型诊断 + 计算机视觉识别（病虫害识别准确率 ≥ 98%）+ 智能预警</p>
+          </div>
+        </div>
+        <!-- 卡片3 -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+          <div class="h-2 bg-primary"></div>
+          <div class="p-6">
+            <div class="w-12 h-12 rounded-xl bg-primary-light flex items-center justify-center mb-4">
+              <i data-lucide="shield-check" class="w-6 h-6 text-primary"></i>
+            </div>
+            <h3 class="font-semibold text-gray-800 mb-2">区块链溯源</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">腾讯云区块链 + 全链路追溯 + 一码到底，确保产品安全可信</p>
+          </div>
+        </div>
+        <!-- 卡片4 -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+          <div class="h-2 bg-primary"></div>
+          <div class="p-6">
+            <div class="w-12 h-12 rounded-xl bg-primary-light flex items-center justify-center mb-4">
+              <i data-lucide="sparkles" class="w-6 h-6 text-primary"></i>
+            </div>
+            <h3 class="font-semibold text-gray-800 mb-2">AIGC 营销 + 云认养</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">AI生成藏汉双语营销内容 + 24小时牧场直播 + 品牌包装赋能</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 平台架构图 ========== -->
+  <section id="features" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-center text-2xl font-bold text-gray-900 mb-12">平台技术架构</h2>
+      <div class="max-w-3xl mx-auto">
+        <svg width="100%" viewBox="0 0 700 280" fill="none" class="mx-auto">
+          <!-- 感知层 -->
+          <rect x="50" y="10" width="600" height="70" rx="12" fill="#E8F5EE" stroke="#1A6B42" stroke-width="1"/>
+          <text x="70" y="35" font-size="13" font-weight="600" fill="#134E30">感知层（天-空-地）</text>
+          <!-- 天 -->
+          <rect x="70" y="45" width="160" height="28" rx="6" fill="white" stroke="#1A6B42" stroke-width="0.8"/>
+          <text x="90" y="64" font-size="11" fill="#1A6B42">🛰️ 北斗卫星遥感</text>
+          <!-- 空 -->
+          <rect x="250" y="45" width="180" height="28" rx="6" fill="white" stroke="#27AE60" stroke-width="0.8"/>
+          <text x="270" y="64" font-size="11" fill="#27AE60">🚁 多光谱无人机巡航</text>
+          <!-- 地 -->
+          <rect x="450" y="45" width="180" height="28" rx="6" fill="white" stroke="#F39C12" stroke-width="0.8"/>
+          <text x="470" y="64" font-size="11" fill="#F39C12">📡 土壤传感器 / 智能摄像头</text>
+          <!-- 箭头 -->
+          <path d="M350 80L350 100" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#9CA3AF"/></marker></defs>
+          <!-- 平台层 -->
+          <rect x="50" y="100" width="600" height="70" rx="12" fill="#134E30" stroke="#134E30" stroke-width="1"/>
+          <text x="70" y="125" font-size="13" font-weight="600" fill="white">平台层</text>
+          <rect x="70" y="135" width="160" height="28" rx="6" fill="rgba(255,255,255,0.15)"/>
+          <text x="90" y="154" font-size="11" fill="white">🤖 腾讯云 AI 大模型</text>
+          <rect x="250" y="135" width="180" height="28" rx="6" fill="rgba(255,255,255,0.15)"/>
+          <text x="270" y="154" font-size="11" fill="white">📊 数据中台</text>
+          <rect x="450" y="135" width="180" height="28" rx="6" fill="rgba(255,255,255,0.15)"/>
+          <text x="470" y="154" font-size="11" fill="white">🔗 区块链服务</text>
+          <!-- 箭头 -->
+          <path d="M350 170L350 190" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#arrow)"/>
+          <!-- 应用层 -->
+          <rect x="50" y="190" width="600" height="70" rx="12" fill="#FFF8EB" stroke="#D4860A" stroke-width="1"/>
+          <text x="70" y="215" font-size="13" font-weight="600" fill="#D4860A">应用层</text>
+          <rect x="70" y="225" width="160" height="28" rx="6" fill="white" stroke="#D4860A" stroke-width="0.8"/>
+          <text x="90" y="244" font-size="11" fill="#D4860A">🏛️ 基层治理端</text>
+          <rect x="250" y="225" width="180" height="28" rx="6" fill="white" stroke="#1A6B42" stroke-width="0.8"/>
+          <text x="270" y="244" font-size="11" fill="#1A6B42">🌾 乡村经营端</text>
+          <rect x="450" y="225" width="180" height="28" rx="6" fill="white" stroke="#3B82F6" stroke-width="0.8"/>
+          <text x="470" y="244" font-size="11" fill="#3B82F6">📱 消费者溯源端</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 数据成果 ========== -->
+  <section class="py-16 bg-primary">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div>
+          <div class="text-3xl md:text-[32px] font-bold text-white mb-2">174</div>
+          <div class="text-sm text-white/70">覆盖乡镇</div>
+        </div>
+        <div>
+          <div class="text-3xl md:text-[32px] font-bold text-white mb-2">8.5<span class="text-xl">万</span></div>
+          <div class="text-sm text-white/70">服务农牧民</div>
+        </div>
+        <div>
+          <div class="text-3xl md:text-[32px] font-bold text-white mb-2">98.6<span class="text-xl">%</span></div>
+          <div class="text-sm text-white/70">AI 诊断准确率</div>
+        </div>
+        <div>
+          <div class="text-3xl md:text-[32px] font-bold text-white mb-2">23.5<span class="text-xl">%</span></div>
+          <div class="text-sm text-white/70">品牌溢价提升</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 特色产品展示 ========== -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-center text-2xl font-bold text-gray-900 mb-12">阿坝州特色产品</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5" id="products-grid">
+        <!-- JS 动态渲染 -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 底部 ========== -->
+  <footer id="about" class="py-12 bg-gray-50 border-t border-gray-100">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <div class="flex items-center justify-center gap-2 mb-4">
+        <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="#1A6B42"/>
+          <path d="M16 7L6 15l3 2v7h14v-7l3-2L16 7z" fill="white" opacity="0.9"/>
+        </svg>
+        <span class="font-semibold text-primary">羌藏耕牧智护</span>
+      </div>
+      <p class="text-sm text-gray-500 mb-2">阿坝州乡村振兴科技示范项目 | 青耘羌藏智联团队</p>
+      <p class="text-xs text-gray-400">© 2026 羌藏耕牧智护平台 · 仅供演示展示</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/mock-data.js"></script>
+  <script src="js/components.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initCommon();
+
+      // 渲染特色产品卡片
+      const grid = document.getElementById('products-grid');
+      if (grid && window.MockData) {
+        const icons = {
+          '小金苹果': 'apple', '茂县李子': 'grape', '麦洼牦牛': 'beef',
+          '茂县甜樱桃': 'cherry', '松潘川贝母': 'flower2', '金川雪梨': 'trees'
+        };
+        window.MockData.featuredProducts.forEach(p => {
+          const iconName = icons[p.name] || 'package';
+          grid.innerHTML += `
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 text-center hover:shadow-md transition">
+              <div class="w-14 h-14 rounded-full bg-primary-light flex items-center justify-center mx-auto mb-3">
+                <i data-lucide="${iconName}" class="w-7 h-7 text-primary"></i>
+              </div>
+              <h4 class="font-semibold text-gray-800 text-sm mb-1">${p.name}</h4>
+              <p class="text-xs text-gray-400 mb-2">${p.county}</p>
+              <p class="text-xs text-gray-500">${p.feature}</p>
+            </div>
+          `;
+        });
+        // 重新初始化图标
+        if (window.lucide) lucide.createIcons();
+      }
+    });
+  </script>
+</body>
+</html>

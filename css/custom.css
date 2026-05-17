@@ -1,0 +1,376 @@
+/* ========================================
+   羌藏耕牧智护 - 自定义样式
+   Tailwind CSS 补充样式
+   ======================================== */
+
+/* 全局字体 */
+body {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* ========================================
+   动画
+   ======================================== */
+
+/* 预警卡片闪烁 */
+@keyframes pulse-warning {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.animate-pulse-warning {
+  animation: pulse-warning 2s infinite;
+}
+
+/* 直播指示灯脉冲 */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.animate-pulse-dot {
+  animation: pulse-dot 1.5s infinite;
+}
+
+/* 牦牛北斗定位脉冲 */
+@keyframes pulse-beidou {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.8); opacity: 0.3; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+.animate-pulse-beidou {
+  animation: pulse-beidou 2s infinite;
+}
+
+/* 淡入动画 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 打字指示器动画 */
+@keyframes typing-dot {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+.typing-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #9CA3AF;
+  border-radius: 50%;
+  margin: 0 2px;
+}
+.typing-dot:nth-child(1) { animation: typing-dot 1.4s infinite 0s; }
+.typing-dot:nth-child(2) { animation: typing-dot 1.4s infinite 0.2s; }
+.typing-dot:nth-child(3) { animation: typing-dot 1.4s infinite 0.4s; }
+
+/* ========================================
+   手风琴折叠组件
+   ======================================== */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.accordion-content.open {
+  max-height: 2000px;
+}
+.accordion-header .chevron-icon,
+.accordion-header .accordion-arrow {
+  transition: transform 0.3s ease;
+}
+.accordion-header.active .chevron-icon,
+.accordion-header.active .accordion-arrow {
+  transform: rotate(180deg);
+}
+
+/* ========================================
+   空状态组件
+   ======================================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+.empty-state svg {
+  color: #D1D5DB;
+}
+
+/* ========================================
+   模态框遮罩
+   ======================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ========================================
+   Toast 提示
+   ======================================== */
+.toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: rgba(26, 26, 46, 0.85);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  z-index: 100;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ========================================
+   经营端 - 移动端容器
+   ======================================== */
+.farming-container {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #F5F7FA;
+  position: relative;
+}
+
+/* 桌面端手机外框效果 */
+@media (min-width: 768px) {
+  .farming-container {
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    min-height: calc(100vh - 40px);
+  }
+}
+
+/* 底部Tab栏安全区域 */
+.farming-body {
+  padding-bottom: 80px;
+}
+
+/* ========================================
+   治理端 - 大屏布局
+   ======================================== */
+.gov-container {
+  min-width: 1280px;
+  min-height: 100vh;
+  background: #F5F7FA;
+}
+
+/* ========================================
+   治理端 - 侧边栏布局
+   ======================================== */
+.gov-layout {
+  display: flex;
+  min-height: calc(100vh - 56px);
+  position: relative;
+}
+
+.gov-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 56px;
+  left: 0;
+  bottom: 0;
+  z-index: 40;
+  overflow-y: auto;
+  transition: transform 0.25s ease;
+}
+
+.gov-main {
+  flex: 1;
+  margin-left: 220px;
+  padding: 16px 24px;
+  min-width: 0;
+  background: #F5F7FA;
+  min-height: calc(100vh - 56px);
+}
+
+.gov-nav-item {
+  position: relative;
+}
+.gov-nav-item:hover {
+  background: #F3F4F6;
+}
+.gov-nav-item-active {
+  background: #E8F5EE !important;
+  color: #1A6B42 !important;
+  font-weight: 600;
+}
+.gov-nav-item-active::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: #1A6B42;
+  border-radius: 0 3px 3px 0;
+}
+
+/* 侧边栏遮罩（移动端） */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 35;
+}
+.sidebar-overlay.open {
+  display: block;
+}
+
+/* 移动端适配 */
+@media (max-width: 1024px) {
+  .gov-sidebar {
+    transform: translateX(-100%);
+  }
+  .gov-sidebar.open {
+    transform: translateX(0);
+  }
+  .gov-main {
+    margin-left: 0;
+    padding: 12px 16px;
+  }
+  .gov-container {
+    min-width: auto;
+  }
+}
+
+/* ========================================
+   聊天气泡
+   ======================================== */
+.chat-bubble-user {
+  background: #E8F5EE;
+  color: #1A1A2E;
+  border-radius: 16px 16px 4px 16px;
+  padding: 10px 14px;
+  max-width: 80%;
+  margin-left: auto;
+}
+.chat-bubble-ai {
+  background: #FFFFFF;
+  color: #1A1A2E;
+  border-radius: 16px 16px 16px 4px;
+  padding: 10px 14px;
+  max-width: 80%;
+  border: 1px solid #E5E7EB;
+}
+
+/* ========================================
+   横向滚动容器
+   ======================================== */
+.scroll-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+/* ========================================
+   进度条
+   ======================================== */
+.progress-bar {
+  height: 6px;
+  background: #E5E7EB;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* ========================================
+   直播卡片渐变背景
+   ======================================== */
+.live-card-bg {
+  background: linear-gradient(135deg, #134E30 0%, #1A6B42 50%, #E8F5EE 100%);
+}
+
+/* ========================================
+   预警等级颜色
+   ======================================== */
+.level-red { color: #E74C3C; }
+.level-orange { color: #F39C12; }
+.level-yellow { color: #F1C40F; }
+.level-green { color: #27AE60; }
+
+/* ========================================
+   双语切换按钮
+   ======================================== */
+.lang-switch {
+  font-size: 12px;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 9999px;
+  padding: 4px 12px;
+  color: #6B7280;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.lang-switch:hover {
+  border-color: #1A6B42;
+}
+
+/* ========================================
+   滚动公告栏
+   ======================================== */
+@keyframes scroll-left {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+.marquee-text {
+  animation: scroll-left 30s linear infinite;
+  white-space: nowrap;
+}

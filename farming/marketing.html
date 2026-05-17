@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>羌藏耕牧智护 - AIGC营销工坊</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/custom.css">
+</head>
+<body class="farming-body">
+
+<div class="farming-container">
+
+  <!-- ========== 顶部标题栏 ========== -->
+  <header class="sticky top-0 bg-white border-b border-gray-100 z-30 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="farm-home.html" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+        <i data-lucide="arrow-left" class="w-5 h-5 text-gray-600"></i>
+      </a>
+      <h1 class="text-base font-semibold text-gray-800">AIGC营销工坊</h1>
+    </div>
+    <button onclick="showToast('历史记录功能演示')" class="text-gray-500 hover:text-gray-700 transition p-1">
+      <i data-lucide="history" class="w-5 h-5"></i>
+    </button>
+  </header>
+
+  <!-- ========== 功能标签导航（4个Tab） ========== -->
+  <div class="sticky top-[52px] bg-white z-20 border-b border-gray-100">
+    <div class="flex text-xs font-medium">
+      <button class="marketing-tab active flex-1 text-center py-3 text-primary border-b-2 border-primary transition" data-tab="tab-copy" onclick="switchMarketingTab('tab-copy')">
+        <i data-lucide="file-text" class="w-4 h-4 mx-auto mb-0.5"></i>
+        <div>AI文案</div>
+      </button>
+      <button class="marketing-tab flex-1 text-center py-3 text-gray-500 border-b-2 border-transparent transition" data-tab="tab-video" onclick="switchMarketingTab('tab-video')">
+        <i data-lucide="video" class="w-4 h-4 mx-auto mb-0.5"></i>
+        <div>AI短视频</div>
+      </button>
+      <button class="marketing-tab flex-1 text-center py-3 text-gray-500 border-b-2 border-transparent transition" data-tab="tab-brand" onclick="switchMarketingTab('tab-brand')">
+        <i data-lucide="palette" class="w-4 h-4 mx-auto mb-0.5"></i>
+        <div>品牌设计</div>
+      </button>
+      <button class="marketing-tab flex-1 text-center py-3 text-gray-500 border-b-2 border-transparent transition" data-tab="tab-data" onclick="switchMarketingTab('tab-data')">
+        <i data-lucide="bar-chart-3" class="w-4 h-4 mx-auto mb-0.5"></i>
+        <div>营销数据</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Tab 1: AI文案                                                -->
+  <!-- ============================================================ -->
+  <div id="tab-copy" class="marketing-content-block">
+    <!-- 模板选择器（横向滚动卡片） -->
+    <div class="px-4 pt-4">
+      <h2 class="text-sm font-semibold text-gray-800 mb-2">选择文案模板</h2>
+      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+        <button class="copy-template active flex-shrink-0 bg-primary text-white text-xs px-4 py-2 rounded-full font-medium" data-template="产品介绍" onclick="selectCopyTemplate(this)">产品介绍</button>
+        <button class="copy-template flex-shrink-0 bg-gray-100 text-gray-600 text-xs px-4 py-2 rounded-full font-medium hover:bg-primary-light hover:text-primary transition" data-template="种养日记" onclick="selectCopyTemplate(this)">种养日记</button>
+        <button class="copy-template flex-shrink-0 bg-gray-100 text-gray-600 text-xs px-4 py-2 rounded-full font-medium hover:bg-primary-light hover:text-primary transition" data-template="节日营销" onclick="selectCopyTemplate(this)">节日营销</button>
+        <button class="copy-template flex-shrink-0 bg-gray-100 text-gray-600 text-xs px-4 py-2 rounded-full font-medium hover:bg-primary-light hover:text-primary transition" data-template="品牌故事" onclick="selectCopyTemplate(this)">品牌故事</button>
+        <button class="copy-template flex-shrink-0 bg-gray-100 text-gray-600 text-xs px-4 py-2 rounded-full font-medium hover:bg-primary-light hover:text-primary transition" data-template="朋友圈文案" onclick="selectCopyTemplate(this)">朋友圈文案</button>
+        <button class="copy-template flex-shrink-0 bg-gray-100 text-gray-600 text-xs px-4 py-2 rounded-full font-medium hover:bg-primary-light hover:text-primary transition" data-template="藏汉双语" onclick="selectCopyTemplate(this)">藏汉双语</button>
+      </div>
+    </div>
+
+    <!-- AI生成内容展示 -->
+    <div class="px-4 pt-4">
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <!-- 标题行 -->
+        <div class="px-4 pt-4 pb-2">
+          <h3 id="copy-title" class="text-sm font-semibold text-gray-800">红原牦牛纯天然牧场品鉴</h3>
+          <div class="flex items-center gap-2 mt-2">
+            <span id="copy-tag" class="text-[10px] bg-primary-light text-primary px-2 py-0.5 rounded-full">产品介绍</span>
+            <span class="text-[10px] text-gray-400">AI生成</span>
+          </div>
+        </div>
+
+        <!-- 中文内容 -->
+        <div class="px-4 pb-3">
+          <div class="text-xs text-gray-500 mb-1.5 font-medium">中文</div>
+          <div id="copy-zh" class="text-sm text-gray-700 leading-relaxed">
+            来自海拔3500米红原大草原的纯种麦洼牦牛，逐水草而居，饮雪山融水，食天然牧草。每一头牦牛都承载着高原的纯净与牧民的匠心。我们的牦牛肉质鲜嫩、营养丰富，蛋白质含量高达22%，是健康生活的不二之选。
+          </div>
+        </div>
+
+        <!-- 藏文内容 -->
+        <div class="px-4 pb-4">
+          <div class="text-xs text-gray-500 mb-1.5 font-medium">藏文</div>
+          <div id="copy-bo" class="text-sm text-gray-700 leading-relaxed" style="font-family: 'Noto Sans SC', 'Microsoft Himalaya', serif;">
+            རྨ་ཆེན་རྒོད་ཐང་གི་གཡག་གི་ཤ་ནི་རྒྱ་ནག་གི་ཞིང་ཆེན་ཞིང་འབྲོག་ལས་དོན་གྱི་དཔལ་འབྱོར་རྒྱུ་ནོར་གལ་ཆེན་ཞིག་ཡིན། ཞིང་འབྲོག་ལས་དོན་གྱི་གཡག་གི་ཤ་ནི་རྒྱ་ནག་གི་གཡག་གི་ཤའི་ནང་གི་གཙོ་བོ་ཡིན།
+          </div>
+        </div>
+
+        <!-- 操作按钮行 -->
+        <div class="px-4 pb-4 flex gap-2">
+          <button onclick="showToast('已复制到剪贴板')" class="flex-1 bg-primary text-white text-xs py-2 rounded-lg hover:bg-primary-dark transition font-medium flex items-center justify-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>复制</span>
+          </button>
+          <button onclick="showToast('正在重新生成文案')" class="flex-1 bg-gray-100 text-gray-600 text-xs py-2 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-1.5">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>重新生成</span>
+          </button>
+          <button onclick="showToast('已收藏')" class="flex-1 bg-gray-100 text-gray-600 text-xs py-2 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-1.5">
+            <i data-lucide="heart" class="w-3.5 h-3.5"></i>
+            <span>收藏</span>
+          </button>
+          <button onclick="showToast('分享功能演示')" class="flex-1 bg-gray-100 text-gray-600 text-xs py-2 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-1.5">
+            <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+            <span>分享</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Tab 2: AI短视频                                              -->
+  <!-- ============================================================ -->
+  <div id="tab-video" class="marketing-content-block hidden">
+    <div class="px-4 pt-4">
+      <h2 class="text-sm font-semibold text-gray-800 mb-3">视频模板</h2>
+      <div class="flex gap-3 overflow-x-auto pb-3 scrollbar-hide -mx-4 px-4">
+        <!-- 模板1 -->
+        <div class="flex-shrink-0 w-40 bg-white rounded-xl shadow-sm overflow-hidden">
+          <div class="relative h-28" style="background: linear-gradient(135deg, #134E30, #1A6B42);">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <i data-lucide="play" class="w-5 h-5 text-white ml-0.5"></i>
+              </div>
+            </div>
+            <div class="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded">00:30</div>
+          </div>
+          <div class="p-2.5">
+            <div class="text-xs text-gray-800 font-medium truncate">红原牧场日出延时摄影</div>
+            <div class="text-[10px] text-gray-400 mt-1">风光 · 30秒</div>
+          </div>
+        </div>
+        <!-- 模板2 -->
+        <div class="flex-shrink-0 w-40 bg-white rounded-xl shadow-sm overflow-hidden">
+          <div class="relative h-28" style="background: linear-gradient(135deg, #D4860A, #F39C12);">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <i data-lucide="play" class="w-5 h-5 text-white ml-0.5"></i>
+              </div>
+            </div>
+            <div class="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded">01:15</div>
+          </div>
+          <div class="p-2.5">
+            <div class="text-xs text-gray-800 font-medium truncate">麦洼牦牛群日常记录</div>
+            <div class="text-[10px] text-gray-400 mt-1">纪实 · 1分15秒</div>
+          </div>
+        </div>
+        <!-- 模板3 -->
+        <div class="flex-shrink-0 w-40 bg-white rounded-xl shadow-sm overflow-hidden">
+          <div class="relative h-28" style="background: linear-gradient(135deg, #2C3E50, #34495E);">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <i data-lucide="play" class="w-5 h-5 text-white ml-0.5"></i>
+              </div>
+            </div>
+            <div class="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded">02:00</div>
+          </div>
+          <div class="p-2.5">
+            <div class="text-xs text-gray-800 font-medium truncate">雪山下的四季轮牧</div>
+            <div class="text-[10px] text-gray-400 mt-1">记录 · 2分钟</div>
+          </div>
+        </div>
+        <!-- 模板4 -->
+        <div class="flex-shrink-0 w-40 bg-white rounded-xl shadow-sm overflow-hidden">
+          <div class="relative h-28" style="background: linear-gradient(135deg, #E74C3C, #C0392B);">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <i data-lucide="play" class="w-5 h-5 text-white ml-0.5"></i>
+              </div>
+            </div>
+            <div class="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded">00:45</div>
+          </div>
+          <div class="p-2.5">
+            <div class="text-xs text-gray-800 font-medium truncate">茂县李子花海</div>
+            <div class="text-[10px] text-gray-400 mt-1">风光 · 45秒</div>
+          </div>
+        </div>
+        <!-- 模板5 -->
+        <div class="flex-shrink-0 w-40 bg-white rounded-xl shadow-sm overflow-hidden">
+          <div class="relative h-28" style="background: linear-gradient(135deg, #27AE60, #2ECC71);">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <i data-lucide="play" class="w-5 h-5 text-white ml-0.5"></i>
+              </div>
+            </div>
+            <div class="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded">01:30</div>
+          </div>
+          <div class="p-2.5">
+            <div class="text-xs text-gray-800 font-medium truncate">小金苹果采摘Vlog</div>
+            <div class="text-[10px] text-gray-400 mt-1">Vlog · 1分30秒</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 生成短视频按钮 -->
+    <div class="px-4 pt-3 pb-2">
+      <button onclick="showToast('AI短视频生成功能演示')" class="w-full bg-primary text-white text-sm py-2.5 rounded-lg hover:bg-primary-dark transition font-medium flex items-center justify-center gap-2">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        <span>AI智能生成短视频</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Tab 3: 品牌设计                                              -->
+  <!-- ============================================================ -->
+  <div id="tab-brand" class="marketing-content-block hidden">
+    <!-- 品牌LOGO展示 -->
+    <div class="px-4 pt-4">
+      <h2 class="text-sm font-semibold text-gray-800 mb-3">品牌LOGO</h2>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-white rounded-xl shadow-sm p-4 flex items-center justify-center" style="height: 100px;">
+          <div class="w-full h-full rounded-lg" style="background: linear-gradient(135deg, #1A6B42, #27AE60);"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-4 flex items-center justify-center" style="height: 100px;">
+          <div class="w-full h-full rounded-lg" style="background: linear-gradient(135deg, #D4860A, #F39C12);"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-4 flex items-center justify-center" style="height: 100px;">
+          <div class="w-full h-full rounded-lg" style="background: linear-gradient(135deg, #134E30, #1A6B42);"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-4 flex items-center justify-center" style="height: 100px;">
+          <div class="w-full h-full rounded-lg" style="background: linear-gradient(135deg, #E74C3C, #C0392B);"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 产品包装设计 -->
+    <div class="px-4 pt-4">
+      <h2 class="text-sm font-semibold text-gray-800 mb-3">产品包装设计</h2>
+      <div class="grid grid-cols-3 gap-3">
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div style="height: 90px; background: linear-gradient(135deg, #E8F5EE, #C8E6C9);" class="flex items-center justify-center">
+            <i data-lucide="package" class="w-8 h-8 text-primary opacity-40"></i>
+          </div>
+          <div class="p-2 text-center">
+            <div class="text-[10px] text-gray-500">牦牛肉包装</div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div style="height: 90px; background: linear-gradient(135deg, #FFF8EB, #FFE0B2);" class="flex items-center justify-center">
+            <i data-lucide="package" class="w-8 h-8 text-secondary opacity-40"></i>
+          </div>
+          <div class="p-2 text-center">
+            <div class="text-[10px] text-gray-500">奶制品包装</div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div style="height: 90px; background: linear-gradient(135deg, #FCE4EC, #F8BBD0);" class="flex items-center justify-center">
+            <i data-lucide="package" class="w-8 h-8 text-accent-red opacity-40"></i>
+          </div>
+          <div class="p-2 text-center">
+            <div class="text-[10px] text-gray-500">水果礼盒包装</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="px-4 pt-4 pb-2 flex gap-3">
+      <button onclick="showToast('正在重新生成品牌设计')" class="flex-1 bg-primary text-white text-sm py-2.5 rounded-lg hover:bg-primary-dark transition font-medium flex items-center justify-center gap-1.5">
+        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        <span>重新生成</span>
+      </button>
+      <button onclick="showToast('正在打包下载素材')" class="flex-1 bg-gray-100 text-gray-600 text-sm py-2.5 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-1.5">
+        <i data-lucide="download" class="w-4 h-4"></i>
+        <span>下载素材</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- Tab 4: 营销数据                                              -->
+  <!-- ============================================================ -->
+  <div id="tab-data" class="marketing-content-block hidden">
+    <!-- 图表 -->
+    <div class="px-4 pt-4">
+      <h2 class="text-sm font-semibold text-gray-800 mb-3">营销趋势</h2>
+      <div class="bg-white rounded-xl shadow-sm p-3">
+        <canvas id="marketing-chart" style="height: 200px; width: 100%;"></canvas>
+      </div>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="px-4 pt-4 pb-6">
+      <div class="grid grid-cols-3 gap-3">
+        <div class="bg-white rounded-xl p-3 text-center shadow-sm">
+          <div class="text-xs text-gray-500 mb-1">发布量</div>
+          <div class="text-lg font-bold text-primary">38</div>
+          <div class="text-[10px] text-gray-400">篇</div>
+        </div>
+        <div class="bg-white rounded-xl p-3 text-center shadow-sm">
+          <div class="text-xs text-gray-500 mb-1">互动量</div>
+          <div class="text-lg font-bold text-secondary">2,400</div>
+          <div class="text-[10px] text-gray-400">次</div>
+        </div>
+        <div class="bg-white rounded-xl p-3 text-center shadow-sm">
+          <div class="text-xs text-gray-500 mb-1">粉丝数</div>
+          <div class="text-lg font-bold text-accent-red">1,560</div>
+          <div class="text-[10px] text-gray-400">人</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ========== 底部Tab栏 ========== -->
+<div id="tabbar"></div>
+
+<!-- ========== 引用脚本 ========== -->
+<script src="../js/mock-data.js"></script>
+<script src="../js/components.js"></script>
+<script src="../js/charts.js"></script>
+
+<script>
+  // ========== 渲染底部Tab栏 ==========
+  document.getElementById('tabbar').innerHTML = renderFarmingTabBar('image');
+
+  // ========== Tab切换 ==========
+  function switchMarketingTab(tabId) {
+    // 切换内容区域
+    document.querySelectorAll('.marketing-content-block').forEach(el => {
+      el.classList.add('hidden');
+    });
+    document.getElementById(tabId).classList.remove('hidden');
+
+    // 切换Tab高亮
+    document.querySelectorAll('.marketing-tab').forEach(el => {
+      el.classList.remove('active', 'text-primary', 'border-primary');
+      el.classList.add('text-gray-500', 'border-transparent');
+    });
+    const activeTab = document.querySelector(`.marketing-tab[data-tab="${tabId}"]`);
+    if (activeTab) {
+      activeTab.classList.add('active', 'text-primary', 'border-primary');
+      activeTab.classList.remove('text-gray-500', 'border-transparent');
+    }
+
+    // 重新创建Lucide图标
+    if (window.lucide) lucide.createIcons();
+
+    // 切换到营销数据Tab时初始化图表
+    if (tabId === 'tab-data') {
+      setTimeout(() => {
+        if (typeof initMarketingChart === 'function') {
+          initMarketingChart('marketing-chart');
+        }
+      }, 100);
+    }
+  }
+
+  // ========== 文案模板选择 ==========
+  function selectCopyTemplate(btn) {
+    // 切换选中样式
+    document.querySelectorAll('.copy-template').forEach(el => {
+      el.classList.remove('bg-primary', 'text-white');
+      el.classList.add('bg-gray-100', 'text-gray-600');
+    });
+    btn.classList.remove('bg-gray-100', 'text-gray-600');
+    btn.classList.add('bg-primary', 'text-white');
+
+    // 更新标题和标签（模拟）
+    const template = btn.getAttribute('data-template');
+    document.getElementById('copy-tag').textContent = template;
+
+    // 从MockData获取文案内容
+    const content = window.MockData && window.MockData.marketingContent && window.MockData.marketingContent[0];
+    if (content) {
+      document.getElementById('copy-title').textContent = content.title || ('红原牦牛' + template + '文案');
+      document.getElementById('copy-zh').textContent = content.zh || '来自海拔3500米红原大草原的纯种麦洼牦牛...';
+      document.getElementById('copy-bo').textContent = content.bo || 'རྨ་ཆེན་རྒོད་ཐང་གི་གཡག་གི་ཤ་...';
+    } else {
+      document.getElementById('copy-title').textContent = '红原牦牛' + template + '文案';
+    }
+
+    showToast('已切换至「' + template + '」模板');
+  }
+
+  // ========== showToast（如未定义则提供兜底实现） ==========
+  if (typeof window.showToast !== 'function') {
+    window.showToast = function(msg) {
+      var toast = document.createElement('div');
+      toast.className = 'fixed bottom-20 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-4 py-2 rounded-lg z-50 animate-fade-in-up';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(function() { toast.remove(); }, 2000);
+    };
+  }
+
+  // ========== 初始化 ==========
+  document.addEventListener('DOMContentLoaded', function() {
+    // 从MockData填充默认文案内容
+    var content = window.MockData && window.MockData.marketingContent && window.MockData.marketingContent[0];
+    if (content) {
+      document.getElementById('copy-title').textContent = content.title || '红原牦牛纯天然牧场品鉴';
+      document.getElementById('copy-zh').textContent = content.zh || '来自海拔3500米红原大草原的纯种麦洼牦牛...';
+      document.getElementById('copy-bo').textContent = content.bo || 'རྨ་ཆེན་རྒོད་ཐང་གི་གཡག་གི་ཤ་...';
+    }
+
+    initCommon();
+  });
+</script>
+
+</body>
+</html>

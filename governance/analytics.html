@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>辖区数据分析 - 羌藏耕牧智护</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="../css/custom.css">
+</head>
+<body>
+  <div id="global-toast" class="toast"></div>
+
+  <script src="../js/mock-data.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="../js/charts.js"></script>
+  <script>
+    const MD = window.MockData;
+  </script>
+
+  <div class="gov-container">
+    <!-- ====== 顶部导航栏 ====== -->
+    <header class="fixed top-0 left-0 right-0 bg-white border-b border-gray-100 z-50" style="height:56px">
+      <div class="flex items-center justify-between h-full px-6">
+        <div class="flex items-center gap-3">
+          <button id="sidebar-toggle" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition text-gray-500">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          <a href="dashboard.html" class="flex items-center gap-2 text-primary hover:opacity-80 transition">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M14 4L4 12l3 2v8h6v-6h2v6h6v-8l3-2L14 4z" fill="#1A6B42"/>
+              <circle cx="20" cy="8" r="3" fill="#1A6B42" opacity="0.3"/>
+              <path d="M20 5.5v5M17.5 8h5" stroke="#1A6B42" stroke-width="1" stroke-linecap="round"/>
+            </svg>
+            <span class="font-semibold text-gray-800 hidden sm:inline">羌藏耕牧智护</span>
+          </a>
+          <span class="text-gray-300 hidden sm:inline">|</span>
+          <nav class="text-sm text-gray-500 hidden sm:block">
+            <a href="dashboard.html" class="hover:text-primary transition">治理端</a>
+            <span class="mx-1">›</span>
+            <span class="text-gray-800 font-medium" data-zh="辖区数据分析" data-bo="ས་ཁུལ་གཞི་གྲངས་དབྱེ་ཞིབ">辖区数据分析</span>
+          </nav>
+        </div>
+        <div class="flex items-center gap-4">
+          <button id="lang-switch" class="lang-switch">藏文</button>
+          <span id="live-clock" class="text-sm text-gray-500 tabular-nums hidden sm:inline"></span>
+          <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center">
+            <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div style="height:56px"></div>
+
+    <!-- ====== 主体布局 ====== -->
+    <div class="gov-layout">
+      <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+      <!-- 左侧菜单 -->
+      <aside id="gov-sidebar" class="gov-sidebar">
+        <nav class="py-4 px-3 space-y-1">
+          <a href="dashboard.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+            <i data-lucide="layout-dashboard" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="监控总览" data-bo="ལྟ་སྐོར་མཐོ་རྟགས">监控总览</span>
+          </a>
+          <a href="alerts.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+            <i data-lucide="bell-ring" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="AI预警中心" data-bo="AI ཉེན་བརྡ་ལྟེ་གནས">AI预警中心</span>
+          </a>
+          <a href="analytics.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition gov-nav-item-active">
+            <i data-lucide="bar-chart-3" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="辖区数据分析" data-bo="ས་ཁུལ་གཞི་གྲངས་དབྱེ་ཞིབ">辖区数据分析</span>
+          </a>
+          <a href="farmers.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+            <i data-lucide="users" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="农户管理" data-bo="ཞིང་པ་དོ་དམ">农户管理</span>
+          </a>
+        </nav>
+        <div class="mt-auto px-3 py-4 border-t border-gray-100">
+          <div class="flex items-center gap-3 px-3 py-2">
+            <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center flex-shrink-0">
+              <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-gray-800 truncate">基层治理员</p>
+              <p class="text-xs text-gray-400 truncate">admin@abazhou.gov</p>
+            </div>
+          </div>
+          <a href="../login.html" class="flex items-center gap-2 px-3 py-2 mt-1 text-xs text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            <span>退出登录</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- 右侧主内容 -->
+      <main class="gov-main">
+        <div class="max-w-[1600px] mx-auto">
+
+          <!-- ====== 页面标题 + 时间选择 ====== -->
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <h1 class="text-lg font-bold text-gray-800" data-zh="辖区数据分析" data-bo="ས་ཁུལ་གཞི་གྲངས་དབྱེ་ཞིབ">辖区数据分析</h1>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-gray-400" data-zh="时间范围：" data-bo="དུས་ཚོད་ཁྱོན།">时间范围：</span>
+              <select id="time-selector" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-600 focus:outline-none focus:border-primary">
+                <option value="today">今日</option>
+                <option value="week">本周</option>
+                <option value="month" selected>本月</option>
+                <option value="year">本年</option>
+              </select>
+              <a href="dashboard.html" class="text-xs text-primary hover:underline flex items-center gap-1 ml-2">
+                <i data-lucide="arrow-left" class="w-3 h-3"></i>
+                <span data-zh="返回总览" data-bo="ལྟ་སྐོར་ལ་འཛུལ་བ">返回总览</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- ====== KPI 卡片行 ====== -->
+          <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="map" class="w-4 h-4 text-primary"></i>
+                <span class="text-xs text-gray-400 font-medium" data-zh="辖区总面积" data-bo="ས་ཁུལ་སྤྱིའི་རྒྱ་ཁྱོན">辖区总面积</span>
+              </div>
+              <div class="text-xl font-bold text-gray-800">83,943 <span class="text-sm font-normal text-gray-400">km²</span></div>
+              <div class="text-xs text-gray-400 mt-1">阿坝州实际面积</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="tree-pine" class="w-4 h-4 text-green-600"></i>
+                <span class="text-xs text-gray-400 font-medium" data-zh="草场面积" data-bo="རྩྭ་ཐང་རྒྱ་ཁྱོན">草场面积</span>
+              </div>
+              <div class="text-xl font-bold text-gray-800">4,700 <span class="text-sm font-normal text-gray-400">万亩</span></div>
+              <div class="text-xs text-gray-400 mt-1">天然草原面积</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="sprout" class="w-4 h-4 text-accent-orange"></i>
+                <span class="text-xs text-gray-400 font-medium" data-zh="耕地面积" data-bo="ཞིང་སའི་རྒྱ་ཁྱོན">耕地面积</span>
+              </div>
+              <div class="text-xl font-bold text-gray-800">74.66 <span class="text-sm font-normal text-gray-400">万亩</span></div>
+              <div class="text-xs text-gray-400 mt-1">粮食播种面积</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="beef" class="w-4 h-4 text-primary"></i>
+                <span class="text-xs text-gray-400 font-medium">牛存栏</span>
+              </div>
+              <div class="text-xl font-bold text-gray-800">208.7 <span class="text-sm font-normal text-gray-400">万头</span></div>
+              <div class="text-xs text-gray-400 mt-1">↑ 较上月 +0.1%</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="apple" class="w-4 h-4 text-red-500"></i>
+                <span class="text-xs text-gray-400 font-medium" data-zh="园林水果产量" data-bo="ཤིང་ཏོག་ཐོན་སྐྱེད">园林水果产量</span>
+              </div>
+              <div class="text-xl font-bold text-gray-800">44.12 <span class="text-sm font-normal text-gray-400">万吨</span></div>
+              <div class="text-xs text-gray-400 mt-1">↑ 较去年 +5.2%</div>
+            </div>
+          </div>
+
+          <!-- ====== 图表区域（2行2列） ====== -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+            <!-- 牦牛数量趋势 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <h2 class="text-sm font-semibold text-gray-800 mb-3" data-zh="牲畜数量趋势" data-bo="སྒོ་ཕྱུགས་གྲངས་འགྱུར་མཚམས">牲畜数量趋势</h2>
+              <div class="h-[280px]">
+                <canvas id="livestockChart"></canvas>
+              </div>
+            </div>
+
+            <!-- 特色产业产量分析 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <h2 class="text-sm font-semibold text-gray-800 mb-3" data-zh="特色产业产量分析" data-bo="ཁྱད་འཕགས་ཐོན་སྐྱེད་དབྱེ་ཞིབ">特色产业产量分析</h2>
+              <div class="h-[280px]">
+                <canvas id="cropChart"></canvas>
+              </div>
+            </div>
+
+            <!-- 土地利用分布 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <h2 class="text-sm font-semibold text-gray-800 mb-3" data-zh="土地利用分布" data-bo="ས་ཞིང་བེད་སྤྱོད་ཁྱབ་ཚུལ">土地利用分布</h2>
+              <div class="h-[280px]">
+                <canvas id="landUseChart"></canvas>
+              </div>
+              <div class="flex justify-center gap-6 mt-2 text-xs text-gray-500">
+                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm" style="background:#1A6B42"></span>草地 56%</span>
+                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm" style="background:#134E30"></span>林地 38%</span>
+                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm" style="background:#F39C12"></span>耕地 4.4%</span>
+              </div>
+            </div>
+
+            <!-- 预警趋势分析 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <h2 class="text-sm font-semibold text-gray-800 mb-3" data-zh="预警趋势分析" data-bo="ཉེན་བརྡ་འགྱུར་མཚམས་དབྱེ་ཞིབ">预警趋势分析</h2>
+              <div class="h-[280px]">
+                <canvas id="alertTrendChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====== 农牧业收入排名（全宽） ====== -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+            <h2 class="text-sm font-semibold text-gray-800 mb-3" data-zh="各县农牧业收入排名" data-bo="རྫོང་རེའི་ཞིང་ཕྱུགས་ཡོང་འབབ་རིམ་གྲས">各县农牧业收入排名</h2>
+            <div class="h-[350px]">
+              <canvas id="incomeChart"></canvas>
+            </div>
+          </div>
+
+          <!-- ====== 生态健康指数（全宽） ====== -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <h2 class="text-sm font-semibold text-gray-800 mb-4" data-zh="生态健康指数" data-bo="སྐྱེ་ཁམས་བདེ་ཐང་དཔྱད་རྟགས">生态健康指数</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+              <!-- 森林覆盖率 -->
+              <div class="text-center">
+                <div class="relative w-24 h-24 mx-auto mb-2">
+                  <svg viewBox="0 0 120 120" class="w-full h-full">
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#E5E7EB" stroke-width="8"/>
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#1A6B42" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="237.504" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-sm font-bold text-gray-800">29.84%</span>
+                  </div>
+                </div>
+                <p class="text-xs font-medium text-gray-600" data-zh="森林覆盖率" data-bo="ནགས་ཚལ་ཁྱབ་ཚད">森林覆盖率</p>
+                <p class="text-[10px] text-green-600 mt-0.5" data-zh="达标" data-bo="ཚད་ལྡན">✓ 达标</p>
+              </div>
+              <!-- 植被指数NDVI -->
+              <div class="text-center">
+                <div class="relative w-24 h-24 mx-auto mb-2">
+                  <svg viewBox="0 0 120 120" class="w-full h-full">
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#E5E7EB" stroke-width="8"/>
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#27AE60" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="101.788" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-sm font-bold text-gray-800">0.72</span>
+                  </div>
+                </div>
+                <p class="text-xs font-medium text-gray-600">NDVI指数</p>
+                <p class="text-[10px] text-green-600 mt-0.5">✓ 良好</p>
+              </div>
+              <!-- 草场健康度 -->
+              <div class="text-center">
+                <div class="relative w-24 h-24 mx-auto mb-2">
+                  <svg viewBox="0 0 120 120" class="w-full h-full">
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#E5E7EB" stroke-width="8"/>
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#1A6B42" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="73.013" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-sm font-bold text-gray-800">78.5%</span>
+                  </div>
+                </div>
+                <p class="text-xs font-medium text-gray-600" data-zh="草场健康度" data-bo="རྩྭ་ཐང་བདེ་ཐང་ཚད">草场健康度</p>
+                <p class="text-[10px] text-green-600 mt-0.5" data-zh="良好" data-bo="བཟང་པོ">✓ 良好</p>
+              </div>
+              <!-- 水土保持指数 -->
+              <div class="text-center">
+                <div class="relative w-24 h-24 mx-auto mb-2">
+                  <svg viewBox="0 0 120 120" class="w-full h-full">
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#E5E7EB" stroke-width="8"/>
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#27AE60" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="60.0" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-sm font-bold text-gray-800">82.3</span>
+                  </div>
+                </div>
+                <p class="text-xs font-medium text-gray-600" data-zh="水土保持指数" data-bo="ས་ཆུ་སྲུང་སྐྱོབ་དཔྱད་རྟགས">水土保持指数</p>
+                <p class="text-[10px] text-green-600 mt-0.5" data-zh="良好" data-bo="བཟང་པོ">✓ 良好</p>
+              </div>
+              <!-- 生物多样性指数 -->
+              <div class="text-center">
+                <div class="relative w-24 h-24 mx-auto mb-2">
+                  <svg viewBox="0 0 120 120" class="w-full h-full">
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#E5E7EB" stroke-width="8"/>
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#F39C12" stroke-width="8" stroke-dasharray="339.292" stroke-dashoffset="96.6" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-sm font-bold text-gray-800">71.6</span>
+                  </div>
+                </div>
+                <p class="text-xs font-medium text-gray-600" data-zh="生物多样性指数" data-bo="སྐྱེ་དངོས་སྣ་མང་དཔྱད་རྟགས">生物多样性指数</p>
+                <p class="text-[10px] text-orange-500 mt-0.5" data-zh="关注" data-bo="དོ་སྣང་བྱེད་དགོས">! 关注</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // ========== 初始化 ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      initLanguageSwitch();
+      initClock();
+      initGovSidebar();
+      if (window.lucide) lucide.createIcons();
+      setFavicon();
+
+      // 延迟初始化图表以确保canvas就绪
+      setTimeout(() => {
+        initLivestockChart('livestockChart');
+        initCropChart('cropChart');
+        initLandUseChart('landUseChart');
+        initAlertTrendChart('alertTrendChart');
+        initIncomeChart('incomeChart');
+      }, 100);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>农户管理 - 羌藏耕牧智护</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="../css/custom.css">
+</head>
+<body>
+  <div id="global-toast" class="toast"></div>
+
+  <script src="../js/mock-data.js"></script>
+  <script src="../js/components.js"></script>
+  <script>
+    const MD = window.MockData;
+  </script>
+
+  <div class="gov-container">
+    <!-- ====== 顶部导航栏 ====== -->
+    <header class="fixed top-0 left-0 right-0 bg-white border-b border-gray-100 z-50" style="height:56px">
+      <div class="flex items-center justify-between h-full px-6">
+        <div class="flex items-center gap-3">
+          <button id="sidebar-toggle" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition text-gray-500">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          <a href="dashboard.html" class="flex items-center gap-2 text-primary hover:opacity-80 transition">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M14 4L4 12l3 2v8h6v-6h2v6h6v-8l3-2L14 4z" fill="#1A6B42"/>
+              <circle cx="20" cy="8" r="3" fill="#1A6B42" opacity="0.3"/>
+              <path d="M20 5.5v5M17.5 8h5" stroke="#1A6B42" stroke-width="1" stroke-linecap="round"/>
+            </svg>
+            <span class="font-semibold text-gray-800 hidden sm:inline">羌藏耕牧智护</span>
+          </a>
+          <span class="text-gray-300 hidden sm:inline">|</span>
+          <nav class="text-sm text-gray-500 hidden sm:block">
+            <a href="dashboard.html" class="hover:text-primary transition">治理端</a>
+            <span class="mx-1">›</span>
+            <span class="text-gray-800 font-medium" data-zh="农户管理" data-bo="ཞིང་པ་དོ་དམ">农户管理</span>
+          </nav>
+        </div>
+        <div class="flex items-center gap-4">
+          <button id="lang-switch" class="lang-switch">藏文</button>
+          <span id="live-clock" class="text-sm text-gray-500 tabular-nums hidden sm:inline"></span>
+          <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center">
+            <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div style="height:56px"></div>
+
+    <!-- ====== 主体布局 ====== -->
+    <div class="gov-layout">
+      <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+      <!-- 左侧菜单 -->
+      <aside id="gov-sidebar" class="gov-sidebar">
+        <nav class="py-4 px-3 space-y-1">
+          <a href="dashboard.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+            <i data-lucide="layout-dashboard" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="监控总览" data-bo="ལྟ་སྐོར་མཐོ་རྟགས">监控总览</span>
+          </a>
+          <a href="alerts.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+            <i data-lucide="bell-ring" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="AI预警中心" data-bo="AI ཉེན་བརྡ་ལྟེ་གནས">AI预警中心</span>
+          </a>
+          <a href="analytics.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+            <i data-lucide="bar-chart-3" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="辖区数据分析" data-bo="ས་ཁུལ་གཞི་གྲངས་དབྱེ་ཞིབ">辖区数据分析</span>
+          </a>
+          <a href="farmers.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition gov-nav-item-active">
+            <i data-lucide="users" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="农户管理" data-bo="ཞིང་པ་དོ་དམ">农户管理</span>
+          </a>
+        </nav>
+        <div class="mt-auto px-3 py-4 border-t border-gray-100">
+          <div class="flex items-center gap-3 px-3 py-2">
+            <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center flex-shrink-0">
+              <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-gray-800 truncate">基层治理员</p>
+              <p class="text-xs text-gray-400 truncate">admin@abazhou.gov</p>
+            </div>
+          </div>
+          <a href="../login.html" class="flex items-center gap-2 px-3 py-2 mt-1 text-xs text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            <span>退出登录</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- 右侧主内容 -->
+      <main class="gov-main">
+        <div class="max-w-[1600px] mx-auto">
+
+          <!-- ====== 页面标题 ====== -->
+          <div class="flex items-center justify-between mb-4">
+            <h1 class="text-lg font-bold text-gray-800" data-zh="农户管理" data-bo="ཞིང་པ་དོ་དམ">农户管理</h1>
+            <a href="dashboard.html" class="text-xs text-primary hover:underline flex items-center gap-1">
+              <i data-lucide="arrow-left" class="w-3 h-3"></i>
+              <span data-zh="返回总览" data-bo="ལྟ་སྐོར་ལ་འཛུལ་བ">返回总览</span>
+            </a>
+          </div>
+
+          <!-- ====== 搜索与筛选栏 ====== -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+            <div class="flex flex-wrap items-center gap-3">
+              <!-- 搜索框 -->
+              <div class="flex items-center gap-1 flex-1 min-w-[200px]">
+                <i data-lucide="search" class="w-4 h-4 text-gray-400 flex-shrink-0"></i>
+                <input id="search-input" type="text" placeholder="搜索姓名/手机号..." class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-gray-600 focus:outline-none focus:border-primary w-full" oninput="filterFarmers()">
+              </div>
+              <!-- 区域筛选 -->
+              <select id="county-filter" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-600 focus:outline-none focus:border-primary" onchange="filterFarmers()">
+                <option value="all">全部区域</option>
+                ${MD.counties.map(c => `<option value="${c.name}">${c.name}</option>`).join('')}
+              </select>
+              <!-- 经营类型 -->
+              <select id="type-filter" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-600 focus:outline-none focus:border-primary" onchange="filterFarmers()">
+                <option value="all">全部类型</option>
+                <option value="planting">果树种植</option>
+                <option value="breeding">牦牛养殖</option>
+                <option value="mixed">综合种养</option>
+                <option value="herb">中药材种植</option>
+                <option value="honey">蜂蜜养殖</option>
+              </select>
+              <!-- 状态筛选 -->
+              <select id="status-filter" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-600 focus:outline-none focus:border-primary" onchange="filterFarmers()">
+                <option value="all">全部状态</option>
+                <option value="normal">正常</option>
+                <option value="attention">关注</option>
+                <option value="warning">预警</option>
+              </select>
+              <!-- 添加农户按钮 -->
+              <button onclick="openAddFarmerModal()" class="bg-primary text-white text-xs px-4 py-1.5 rounded-lg hover:opacity-90 transition font-medium flex items-center gap-1 ml-auto">
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                <span data-zh="添加农户" data-bo="ཞིང་པ་གསར་པ་ཁ་སྣོན">添加农户</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ====== 统计行 ====== -->
+          <div class="grid grid-cols-4 gap-4 mb-4">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
+              <div class="text-lg font-bold text-gray-800">3,892</div>
+              <div class="text-xs text-gray-400" data-zh="总农户" data-bo="ཞིང་པ་ཡོངས།">总农户</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
+              <div class="text-lg font-bold text-green-600">3,654</div>
+              <div class="text-xs text-gray-400" data-zh="正常" data-bo="སྤྱོད་ཐབས་ལྡན།">正常</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
+              <div class="text-lg font-bold text-accent-orange">198</div>
+              <div class="text-xs text-gray-400" data-zh="关注" data-bo="དོ་སྣང་བྱེད་དགོས།">关注</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
+              <div class="text-lg font-bold text-red-500">40</div>
+              <div class="text-xs text-gray-400" data-zh="预警" data-bo="ཉེན་བརྡ།">预警</div>
+            </div>
+          </div>
+
+          <!-- ====== 农户列表 ====== -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="bg-gray-50">
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500 w-12">#</th>
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500" data-zh="姓名" data-bo="མིང">姓名</th>
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500" data-zh="民族" data-bo="མི་རིགས">民族</th>
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500" data-zh="区域" data-bo="ས་ཁུལ">区域</th>
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500" data-zh="经营类型" data-bo="བྱེད་སྒོའི་རིགས">经营类型</th>
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500" data-zh="主要产品" data-bo="གཙོ་བོའི་ཐོན་སྐྱེད">主要产品</th>
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500" data-zh="状态" data-bo="གནས་ཚུལ">状态</th>
+                    <th class="text-center px-4 py-3 text-xs font-medium text-gray-500" data-zh="操作" data-bo="བྱ་སྤྱོད">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="farmer-table-body">
+                  <!-- 由JS动态渲染 -->
+                </tbody>
+              </table>
+            </div>
+            <!-- 空状态 -->
+            <div id="empty-farmer-state" class="empty-state hidden">
+              <i data-lucide="users" class="w-12 h-12 text-gray-300 mb-3"></i>
+              <p class="text-sm font-medium text-gray-500" data-zh="暂无农户数据" data-bo="ཞིང་པ་གཞི་གྲངས་མེད">暂无农户数据</p>
+              <p class="text-xs text-gray-400 mt-1" data-zh="尝试调整筛选条件或添加新农户" data-bo="ཞིང་པ་གསར་པ་ཁ་སྣོན">尝试调整筛选条件或添加新农户</p>
+              <button onclick="openAddFarmerModal()" class="mt-4 bg-primary text-white text-sm px-4 py-2 rounded-lg hover:opacity-90 transition font-medium">
+                <i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>
+                <span data-zh="添加农户" data-bo="ཞིང་པ་གསར་པ་ཁ་སྣོན">添加农户</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ====== 农户详情模态框 ====== -->
+  <div id="farmer-modal" class="modal-overlay">
+    <div class="bg-white rounded-xl shadow-lg max-w-3xl w-full mx-4 max-h-[85vh] overflow-y-auto">
+      <!-- 头部 -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-primary-light flex items-center justify-center">
+            <i data-lucide="user" class="w-5 h-5 text-primary"></i>
+          </div>
+          <div>
+            <h2 id="farmer-modal-name" class="text-base font-semibold text-gray-800"></h2>
+            <p id="farmer-modal-sub" class="text-xs text-gray-400"></p>
+          </div>
+        </div>
+        <button onclick="closeModal('farmer-modal')" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition">
+          <i data-lucide="x" class="w-4 h-4 text-gray-400"></i>
+        </button>
+      </div>
+      <!-- Tab切换 -->
+      <div class="px-6 pt-3 border-b border-gray-100">
+        <div class="flex gap-6" id="farmer-tabs">
+          <button class="farmer-tab active text-sm font-medium text-primary border-b-2 border-primary pb-2 transition" data-tab="info" data-zh="基本信息" data-bo="གཞི་རྩའི་གནས་ཚུལ">基本信息</button>
+          <button class="farmer-tab text-sm font-medium text-gray-500 hover:text-gray-700 pb-2 transition" data-tab="alerts" data-zh="预警记录" data-bo="ཉེན་བརྡ་ཐོ">预警记录</button>
+          <button class="farmer-tab text-sm font-medium text-gray-500 hover:text-gray-700 pb-2 transition" data-tab="training" data-zh="培训记录" data-bo="སྦྱོང་བརྡར་ཐོ">培训记录</button>
+        </div>
+      </div>
+      <!-- Tab内容 -->
+      <div class="px-6 py-4">
+        <!-- Tab1: 基本信息 -->
+        <div id="tab-info" class="farmer-tab-content">
+          <!-- 由JS渲染 -->
+        </div>
+        <!-- Tab2: 预警记录 -->
+        <div id="tab-alerts" class="farmer-tab-content hidden">
+          <div id="farmer-alerts-list" class="space-y-3"></div>
+        </div>
+        <!-- Tab3: 培训记录 -->
+        <div id="tab-training" class="farmer-tab-content hidden">
+          <div id="farmer-training-list" class="space-y-3"></div>
+          <div id="farmer-training-empty" class="empty-state hidden">
+            <i data-lucide="book-open" class="w-10 h-10 text-gray-300 mb-2"></i>
+            <p class="text-xs font-medium text-gray-500" data-zh="该农户尚未参加培训" data-bo="ཞིང་པ་འདིས་སྦྱོང་བརྡར་ལ་ཞུགས་མེད">该农户尚未参加培训</p>
+          </div>
+          <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+            <div class="flex gap-4 text-xs text-gray-500" id="training-stats"></div>
+            <button onclick="showToast('报名成功')" class="bg-primary text-white text-xs px-4 py-1.5 rounded-lg hover:opacity-90 transition font-medium" data-zh="报名培训" data-bo="སྦྱོང་བརྡར་ལ་མིང་འགོད">报名培训</button>
+          </div>
+        </div>
+      </div>
+      <!-- 底部操作 -->
+      <div class="px-6 py-3 border-t border-gray-100 flex items-center gap-3">
+        <button onclick="showToast('编辑功能已打开')" class="bg-white text-primary border border-primary text-sm px-4 py-1.5 rounded-lg hover:bg-primary-light transition font-medium" data-zh="编辑信息" data-bo="གནས་ཚུལ་སྒྲིག་བཅོས">编辑信息</button>
+        <button onclick="showToast('通知已发送')" class="bg-white text-gray-600 border border-gray-200 text-sm px-4 py-1.5 rounded-lg hover:bg-gray-50 transition font-medium" data-zh="发送通知" data-bo="བརྡ་འཕྲིན་གཏོང་བ">发送通知</button>
+        <button onclick="showToast('查看完整档案')" class="text-primary text-sm hover:underline ml-auto font-medium" data-zh="查看完整档案 ›" data-bo="ཡོངས་རྫོགས་ཡིག་ཚགས་ལ་ལྟ་ཞིབ།">查看完整档案 ›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== 添加农户模态框 ====== -->
+  <div id="add-farmer-modal" class="modal-overlay">
+    <div class="bg-white rounded-xl shadow-lg max-w-lg w-full mx-4 max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <h2 class="text-base font-semibold text-gray-800" data-zh="添加农户" data-bo="ཞིང་པ་གསར་པ་ཁ་སྣོན">添加农户</h2>
+        <button onclick="closeModal('add-farmer-modal')" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition">
+          <i data-lucide="x" class="w-4 h-4 text-gray-400"></i>
+        </button>
+      </div>
+      <div class="px-6 py-4 space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs text-gray-500 font-medium block mb-1" data-zh="姓名" data-bo="མིང">姓名</label>
+            <input type="text" placeholder="请输入姓名" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-primary">
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 font-medium block mb-1" data-zh="民族" data-bo="མི་རིགས">民族</label>
+            <select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-primary">
+              <option>藏</option>
+              <option>羌</option>
+              <option>汉</option>
+              <option>回</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 font-medium block mb-1" data-zh="手机号" data-bo="ཁ་པར་ཨང་གྲངས">手机号</label>
+            <input type="text" placeholder="请输入手机号" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-primary">
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 font-medium block mb-1" data-zh="所在区域" data-bo="གནས་སའི་ས་ཁུལ">所在区域</label>
+            <select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-primary">
+              ${MD.counties.map(c => `<option>${c.name}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 font-medium block mb-1" data-zh="经营类型" data-bo="བྱེད་སྒོའི་རིགས">经营类型</label>
+            <select class="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-primary">
+              <option>牦牛养殖</option>
+              <option>果树种植</option>
+              <option>综合种养</option>
+              <option>中药材种植</option>
+              <option>蜂蜜养殖</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 font-medium block mb-1" data-zh="主要产品" data-bo="གཙོ་བོའི་ཐོན་སྐྱེད">主要产品</label>
+            <input type="text" placeholder="如：麦洼牦牛、小金苹果" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-primary">
+          </div>
+        </div>
+        <div>
+          <label class="text-xs text-gray-500 font-medium block mb-1" data-zh="家庭地址" data-bo="ཁྱིམ་ཚང་གི་ས་གནས">家庭地址</label>
+          <input type="text" placeholder="请输入详细地址" class="w-full text-sm bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-primary">
+        </div>
+      </div>
+      <div class="px-6 py-3 border-t border-gray-100 flex items-center gap-3 justify-end">
+        <button onclick="closeModal('add-farmer-modal')" class="bg-white text-gray-600 border border-gray-200 text-sm px-5 py-2 rounded-lg hover:bg-gray-50 transition font-medium" data-zh="取消" data-bo="བཤོལ་བ">取消</button>
+        <button onclick="closeModal('add-farmer-modal'); showToast('农户添加成功')" class="bg-primary text-white text-sm px-5 py-2 rounded-lg hover:opacity-90 transition font-medium" data-zh="确认添加" data-bo="ཁ་སྣོན་གཏན་འབེབས">确认添加</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 初始化 ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      initLanguageSwitch();
+      initClock();
+      initGovSidebar();
+      if (window.lucide) lucide.createIcons();
+      setFavicon();
+
+      renderFarmerTable();
+
+      // Tab切换
+      document.querySelectorAll('.farmer-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          document.querySelectorAll('.farmer-tab').forEach(t => {
+            t.className = 'farmer-tab text-sm font-medium text-gray-500 hover:text-gray-700 pb-2 transition';
+          });
+          this.className = 'farmer-tab active text-sm font-medium text-primary border-b-2 border-primary pb-2 transition';
+          document.querySelectorAll('.farmer-tab-content').forEach(c => c.classList.add('hidden'));
+          document.getElementById('tab-' + this.dataset.tab).classList.remove('hidden');
+        });
+      });
+    });
+
+    let currentFarmers = [];
+
+    function renderFarmerTable(farmers) {
+      const data = farmers || MD.farmers;
+      currentFarmers = data;
+      const tbody = document.getElementById('farmer-table-body');
+      const emptyState = document.getElementById('empty-farmer-state');
+
+      if (data.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      const statusMap = {
+        normal: { cn: '正常', color: 'bg-green-50 text-green-700' },
+        attention: { cn: '关注', color: 'bg-orange-50 text-orange-700' },
+        warning: { cn: '预警', color: 'bg-red-50 text-red-700' }
+      };
+
+      const typeNames = {
+        planting: '果树种植', breeding: '牦牛养殖', mixed: '综合种养',
+        herb: '中药材种植', honey: '蜂蜜养殖', vegetable: '蔬菜种植'
+      };
+
+      tbody.innerHTML = data.map(f => `
+        <tr class="border-b border-gray-100 hover:bg-gray-50 transition cursor-pointer" onclick="openFarmerDetail(${f.id})">
+          <td class="px-4 py-3 text-sm text-gray-400">${f.id}</td>
+          <td class="px-4 py-3">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-full bg-primary-light flex items-center justify-center flex-shrink-0">
+                <i data-lucide="user" class="w-3.5 h-3.5 text-primary"></i>
+              </div>
+              <span class="text-sm font-medium text-gray-800">${f.name}</span>
+            </div>
+          </td>
+          <td class="px-4 py-3 text-sm text-gray-600">${f.ethnicity}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${f.county}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${typeNames[f.type] || f.typeName}</td>
+          <td class="px-4 py-3">
+            <span class="text-xs text-gray-600">${f.mainProduct}</span>
+          </td>
+          <td class="px-4 py-3">
+            <span class="text-xs px-2 py-0.5 rounded-full font-medium ${statusMap[f.status].color}">${statusMap[f.status].cn}</span>
+          </td>
+          <td class="px-4 py-3 text-center">
+            <button onclick="event.stopPropagation(); openFarmerDetail(${f.id})" class="text-xs text-primary hover:underline font-medium" data-zh="详情" data-bo="ཞིབ་བཤེར">详情</button>
+          </td>
+        </tr>
+      `).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function filterFarmers() {
+      let data = [...MD.farmers];
+
+      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      if (query) {
+        data = data.filter(f =>
+          f.name.includes(query) ||
+          (f.phone && f.phone.includes(query))
+        );
+      }
+
+      const county = document.getElementById('county-filter').value;
+      if (county !== 'all') data = data.filter(f => f.county === county);
+
+      const type = document.getElementById('type-filter').value;
+      if (type !== 'all') data = data.filter(f => f.type === type);
+
+      const status = document.getElementById('status-filter').value;
+      if (status !== 'all') data = data.filter(f => f.status === status);
+
+      renderFarmerTable(data);
+    }
+
+    function openFarmerDetail(id) {
+      const f = MD.farmers.find(x => x.id === id);
+      if (!f) return;
+
+      document.getElementById('farmer-modal-name').textContent = f.name;
+      document.getElementById('farmer-modal-sub').textContent = f.phone + ' · ' + f.county + f.town;
+
+      // 基本信息Tab
+      const infoHtml = `
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div class="bg-gray-50 rounded-lg p-3">
+            <div class="text-xs text-gray-400 mb-1">姓名</div>
+            <div class="text-sm font-medium text-gray-800">${f.name}</div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3">
+            <div class="text-xs text-gray-400 mb-1">年龄 / 民族</div>
+            <div class="text-sm font-medium text-gray-800">${f.ethnicity}</div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3">
+            <div class="text-xs text-gray-400 mb-1">联系电话</div>
+            <div class="text-sm font-medium text-gray-800">${f.phone}</div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3">
+            <div class="text-xs text-gray-400 mb-1">家庭地址</div>
+            <div class="text-sm font-medium text-gray-800">${f.county} ${f.town}</div>
+          </div>
+        </div>
+        <h3 class="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide" data-zh="经营信息" data-bo="བྱེད་སྒོའི་གནས་ཚུལ">经营信息</h3>
+        <div class="grid grid-cols-3 gap-3 mb-4">
+          <div class="bg-gray-50 rounded-lg p-3 text-center">
+            <div class="text-xs text-gray-400 mb-1" data-zh="经营类型" data-bo="བྱེད་སྒོའི་རིགས">经营类型</div>
+            <div class="text-sm font-medium text-gray-800">${f.typeName}</div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3 text-center">
+            <div class="text-xs text-gray-400 mb-1" data-zh="耕地面积" data-bo="ཞིང་སའི་རྒྱ་ཁྱོན">耕地面积</div>
+            <div class="text-sm font-medium text-gray-800">${f.area.farmland || 0} 亩</div>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3 text-center">
+            <div class="text-xs text-gray-400 mb-1" data-zh="草场面积" data-bo="རྩྭ་ཐང་རྒྱ་ཁྱོན">草场面积</div>
+            <div class="text-sm font-medium text-gray-800">${(f.area.grassland || 0).toLocaleString()} 亩</div>
+          </div>
+        </div>
+        <div class="bg-white border border-gray-100 rounded-lg p-3 mb-4">
+          <div class="text-xs text-gray-400 mb-2" data-zh="主要产品" data-bo="གཙོ་བོའི་ཐོན་སྐྱེད">主要产品</div>
+          <div class="text-sm font-medium text-gray-800">${f.mainProduct}</div>
+          <div class="flex flex-wrap gap-2 mt-2">
+            ${f.livestock && f.livestock.yak ? `<span class="text-[10px] bg-primary-light text-primary px-2 py-0.5 rounded-full">牦牛 ${f.livestock.yak}头</span>` : ''}
+            ${f.livestock && f.livestock.sheep ? `<span class="text-[10px] bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full">绵羊 ${f.livestock.sheep}只</span>` : ''}
+            ${f.livestock && f.livestock.horse ? `<span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">马 ${f.livestock.horse}匹</span>` : ''}
+          </div>
+        </div>
+        <div class="bg-white border border-gray-100 rounded-lg p-3">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-gray-400" data-zh="本月收入" data-bo="ཟླ་འདིའི་ཡོང་འབབ">本月收入</span>
+            <span class="text-xs text-green-600 font-medium">↑ 趋势向好</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">¥${f.monthlyIncome.toLocaleString()}</div>
+          <div class="flex items-center gap-1 mt-2">
+            ${f.incomeTrend.map((v, i) => {
+              const h = Math.max(4, (v / Math.max(...f.incomeTrend)) * 40);
+              const color = i === f.incomeTrend.length - 1 ? 'bg-primary' : 'bg-primary-light';
+              return `<div class="w-3 ${color} rounded-sm" style="height:${h}px"></div>`;
+            }).join('')}
+          </div>
+        </div>
+      `;
+      document.getElementById('tab-info').innerHTML = infoHtml;
+
+      // 预警记录Tab
+      const farmerAlerts = MD.alerts.filter(a => a.county === f.county && (!f.town || a.location?.includes(f.town) || true));
+      const alertsContainer = document.getElementById('farmer-alerts-list');
+      if (farmerAlerts.length > 0) {
+        const levelColors = { red: 'bg-red-500', orange: 'bg-orange-400', yellow: 'bg-yellow-400' };
+        const levelTexts = { red: '紧急', orange: '重要', yellow: '关注' };
+        const statusColors = { pending: 'text-red-600', processing: 'text-orange-500', resolved: 'text-green-600' };
+        const statusTexts = { pending: '待处理', processing: '处理中', resolved: '已处理' };
+        alertsContainer.innerHTML = farmerAlerts.slice(0, 5).map(a => `
+          <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+            <span class="w-2 h-2 rounded-full ${levelColors[a.level] || 'bg-yellow-400'} mt-1.5 flex-shrink-0"></span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-0.5">
+                <span class="text-[10px] px-1.5 py-0.5 rounded-full font-medium ${a.level === 'red' ? 'bg-red-50 text-red-700' : a.level === 'orange' ? 'bg-orange-50 text-orange-700' : 'bg-yellow-50 text-yellow-700'}">${levelTexts[a.level] || a.level}</span>
+                <span class="text-[10px] text-gray-400">${a.typeName}</span>
+                <span class="text-[10px] text-gray-400 ml-auto">${a.time}</span>
+              </div>
+              <p class="text-xs text-gray-700">${a.title}</p>
+              <p class="text-[10px] ${statusColors[a.status] || 'text-gray-400'} mt-0.5">${statusTexts[a.status] || a.status}</p>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        alertsContainer.innerHTML = `<div class="text-center py-8 text-xs text-gray-400" data-zh="暂无预警记录" data-bo="ཉེན་བརྡ་ཐོ་མེད">暂无预警记录</div>`;
+      }
+
+      // 培训记录Tab
+      const trainingContainer = document.getElementById('farmer-training-list');
+      const trainingEmpty = document.getElementById('farmer-training-empty');
+      const trainingStats = document.getElementById('training-stats');
+
+      if (f.trainingRecords && f.trainingRecords.length > 0) {
+        trainingEmpty.classList.add('hidden');
+        trainingContainer.classList.remove('hidden');
+        const statusColors = { completed: 'bg-green-50 text-green-700', upcoming: 'bg-blue-50 text-blue-700' };
+        const statusTexts = { completed: '已完成', upcoming: '待参加' };
+        trainingContainer.innerHTML = f.trainingRecords.map(t => `
+          <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-[10px] px-1.5 py-0.5 rounded-full ${t.type === '线下培训' ? 'bg-primary-light text-primary' : 'bg-blue-50 text-blue-700'}">${t.type}</span>
+                <span class="text-xs text-gray-700 font-medium">${t.topic}</span>
+              </div>
+              <div class="text-[10px] text-gray-400">
+                ${t.date} · ${t.duration}
+              </div>
+            </div>
+            <div class="text-right flex-shrink-0 ml-3">
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-medium ${statusColors[t.status] || 'bg-gray-100 text-gray-500'}">${statusTexts[t.status] || t.status}</span>
+              ${t.score ? `<div class="text-[10px] text-accent-orange mt-0.5">${t.score}分</div>` : ''}
+            </div>
+          </div>
+        `).join('');
+
+        const completed = f.trainingRecords.filter(t => t.status === 'completed');
+        const totalHours = f.trainingRecords.reduce((sum, t) => {
+          const h = parseInt(t.duration);
+          return sum + (isNaN(h) ? 0 : h);
+        }, 0);
+        const avgScore = completed.length > 0
+          ? (completed.reduce((sum, t) => sum + (t.score || 0), 0) / completed.length).toFixed(1)
+          : '—';
+        trainingStats.innerHTML = `
+          <span data-zh="累计参加培训" data-bo="སྦྱོང་བརྡར་ལ་ཞུགས་ཚང">累计参加培训</span> <b>${completed.length}</b> 次
+          <span data-zh="总培训时长" data-bo="སྦྱོང་བརྡར་ཡུན་ཚད">总培训时长</span> <b>${totalHours}</b> 小时
+          <span data-zh="平均评分" data-bo="དཔྱད་གཞིའི་ཚད་གཞི">平均评分</span> <b>${avgScore}</b>
+        `;
+      } else {
+        trainingContainer.innerHTML = '';
+        trainingContainer.classList.add('hidden');
+        trainingEmpty.classList.remove('hidden');
+        trainingStats.innerHTML = '';
+      }
+
+      openModal('farmer-modal');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function openAddFarmerModal() {
+      openModal('add-farmer-modal');
+    }
+  </script>
+</body>
+</html>

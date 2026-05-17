@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>羌藏耕牧智护 - 云认养管理</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/custom.css">
+</head>
+<body class="farming-body">
+
+<div class="farming-container">
+
+  <!-- ========== 顶部标题栏 ========== -->
+  <header class="sticky top-0 bg-white border-b border-gray-100 z-30 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="farm-home.html" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+        <i data-lucide="arrow-left" class="w-5 h-5 text-gray-600"></i>
+      </a>
+      <h1 class="text-base font-semibold text-gray-800" data-zh="云认养管理" data-bo="གློག་སྐྱེས་དོ་དམ།">云认养管理</h1>
+    </div>
+    <button onclick="showToast('新增认养方案功能演示')" class="flex items-center gap-1 bg-primary text-white text-xs px-3 py-1.5 rounded-full hover:bg-primary-dark transition">
+      <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+      <span data-zh="新增认养方案" data-bo="གློག་སྐྱེས་འཆས་འགོ་གསར་བའི།">新增认养方案</span>
+    </button>
+  </header>
+
+  <!-- ========== 认养数据概览 ========== -->
+  <div class="px-4 pt-4">
+    <div class="grid grid-cols-3 gap-3">
+      <!-- 认养中 -->
+      <div class="bg-white rounded-xl p-3 text-center shadow-sm">
+        <div class="text-xs text-gray-500 mb-1" data-zh="认养中" data-bo="གློག་སྐྱེས་བྱེད་བཞིན།">认养中</div>
+        <div class="text-lg font-bold text-primary">128</div>
+        <div class="text-[10px] text-gray-400" data-zh="头/棵" data-bo="རྟ/ཤིང">头/棵</div>
+      </div>
+      <!-- 认养总收入 -->
+      <div class="bg-white rounded-xl p-3 text-center shadow-sm">
+        <div class="text-xs text-gray-500 mb-1" data-zh="认养总收入" data-bo="དོན་ཡོད་དངུལ་འགྱོ">认养总收入</div>
+        <div class="text-lg font-bold text-secondary">¥384,000</div>
+        <div class="text-[10px] text-gray-400" data-zh="累计" data-bo="བསྡོམས་འབྲེལ།">累计</div>
+      </div>
+      <!-- 直播观看累计 -->
+      <div class="bg-white rounded-xl p-3 text-center shadow-sm">
+        <div class="text-xs text-gray-500 mb-1" data-zh="直播观看累计" data-bo="ལངས་སྤྲོད་ལྟ་བ་">直播观看累计</div>
+        <div class="text-lg font-bold text-accent-red">56,823</div>
+        <div class="text-[10px] text-gray-400" data-zh="次" data-bo="ཐེངས།">次</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 24小时牧场直播 ========== -->
+  <div class="px-4 pt-4">
+    <div class="rounded-2xl overflow-hidden shadow-sm">
+      <!-- 直播画面区域 -->
+      <div class="live-card-bg relative" style="height: 200px;">
+        <!-- 牦牛剪影SVG -->
+        <svg class="absolute bottom-0 left-0 right-0 opacity-20" viewBox="0 0 430 120" fill="white">
+          <!-- 山脉轮廓 -->
+          <path d="M0 120 L60 60 L100 85 L160 40 L200 70 L260 30 L310 65 L370 45 L430 80 L430 120Z"/>
+          <!-- 牦牛剪影 -->
+          <g transform="translate(180, 55) scale(0.5)">
+            <path d="M30 50 Q35 35 40 30 Q38 20 35 15 L30 20 Q25 10 20 5 Q15 15 18 25 Q10 30 8 40 Q5 45 10 50 L15 55 Q20 60 25 58 Q28 55 30 50Z"/>
+            <ellipse cx="18" cy="35" rx="3" ry="2"/>
+            <line x1="8" y1="50" x2="2" y2="58" stroke="white" stroke-width="2"/>
+            <line x1="25" y1="55" x2="28" y2="62" stroke="white" stroke-width="2"/>
+          </g>
+          <g transform="translate(280, 50) scale(0.6)">
+            <path d="M30 50 Q35 35 40 30 Q38 20 35 15 L30 20 Q25 10 20 5 Q15 15 18 25 Q10 30 8 40 Q5 45 10 50 L15 55 Q20 60 25 58 Q28 55 30 50Z"/>
+            <ellipse cx="18" cy="35" rx="3" ry="2"/>
+            <line x1="8" y1="50" x2="2" y2="58" stroke="white" stroke-width="2"/>
+            <line x1="25" y1="55" x2="28" y2="62" stroke="white" stroke-width="2"/>
+          </g>
+        </svg>
+
+        <!-- 左上角直播指示 -->
+        <div class="absolute top-3 left-3 flex items-center gap-1.5 bg-red-500 text-white text-xs px-2.5 py-1 rounded-full">
+          <span class="w-2 h-2 rounded-full bg-white animate-pulse-dot"></span>
+          <span data-zh="直播中" data-bo="ལངས་སྤྲོད་བྱེད་བཞིན།">直播中</span>
+        </div>
+
+        <!-- 右上角观看人数 -->
+        <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/40 text-white text-xs px-2.5 py-1 rounded-full">
+          <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+          <span>1,234 <span data-zh="人正在观看" data-bo="མི་ལྟ་བཞིན།">人正在观看</span></span>
+        </div>
+
+        <!-- 播放按钮 -->
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:bg-white/30 transition">
+            <i data-lucide="play" class="w-7 h-7 text-white ml-0.5"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- 牧场信息 -->
+      <div class="bg-white px-4 py-3">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="map-pin" class="w-4 h-4 text-primary"></i>
+          <span class="text-sm font-medium text-gray-800" data-zh="扎西家庭牧场" data-bo="བཀྲ་ཤིས་ཁྱིམ་ཚང་རྒྱུན་རྩེར།">扎西家庭牧场</span>
+          <span class="text-xs text-gray-400">|</span>
+          <span class="text-xs text-gray-500" data-zh="红原县邛溪镇" data-bo="རྡུང་ཡུལ་རྫོང་ཆུང་ཤོག་གྲོང">红原县邛溪镇</span>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-gray-400">
+          <span class="flex items-center gap-1"><i data-lucide="mountain" class="w-3.5 h-3.5"></i>海拔 3,520m</span>
+          <span class="flex items-center gap-1"><i data-lucide="camera" class="w-3.5 h-3.5"></i>高清摄像头 x3</span>
+          <span class="flex items-center gap-1"><i data-lucide="wifi" class="w-3.5 h-3.5"></i>4G在线</span>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="bg-white px-4 pb-4 flex gap-2">
+        <button onclick="showToast('直播功能演示，非真实直播')" class="flex-1 bg-primary text-white text-sm py-2 rounded-lg hover:bg-primary-dark transition font-medium" data-zh="进入直播间" data-bo="ལངས་སྤྲོད་ཁྲོད་དུ་ཕར།">进入直播间</button>
+        <button onclick="showToast('直播功能演示，非真实直播')" class="flex-1 bg-gray-100 text-gray-700 text-sm py-2 rounded-lg hover:bg-gray-200 transition" data-zh="分享直播链接" data-bo="ལངས་སྤྲོད་འབྲེལ་ཐུག་བརྒྱུད།">分享直播链接</button>
+        <button onclick="showToast('直播功能演示，非真实直播')" class="flex-1 bg-gray-100 text-gray-700 text-sm py-2 rounded-lg hover:bg-gray-200 transition" data-zh="直播回放" data-bo="ལངས་སྤྲོད་ཕྱིར་སྤྲོད།">直播回放</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 认养方案列表 ========== -->
+  <div class="px-4 pt-4 pb-2">
+    <h2 class="text-sm font-semibold text-gray-800 mb-3" data-zh="认养方案列表" data-bo="གློག་སྐྱེས་འཆས་འགོའི་ཟླ་ཤོག">认养方案列表</h2>
+    <div id="adoption-list" class="space-y-3">
+      <!-- 由JS渲染 -->
+    </div>
+  </div>
+
+</div>
+
+<!-- ========== 底部Tab栏 ========== -->
+<div id="tabbar"></div>
+
+<!-- ========== 引用脚本 ========== -->
+<script src="../js/mock-data.js"></script>
+<script src="../js/components.js"></script>
+<script src="../js/charts.js"></script>
+
+<script>
+  // ========== 渲染底部Tab栏 ==========
+  document.getElementById('tabbar').innerHTML = renderFarmingTabBar('heart');
+
+  // ========== 渲染认养方案列表 ==========
+  function renderAdoptionPlans() {
+    const container = document.getElementById('adoption-list');
+    const plans = window.MockData.adoptionPlans;
+    if (!plans) return;
+
+    container.innerHTML = plans.map((plan, index) => {
+      // 进度百分比
+      const progress = Math.round((plan.adoptedCount / plan.totalCount) * 100);
+      // 状态标签
+      const statusTag = plan.status === 'active'
+        ? '<span class="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full">' + (plan.status === 'active' ? '认养中' : '已完成') + '</span>'
+        : '<span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded-full">已完成</span>';
+      // 直播状态
+      const liveStatus = plan.isLive
+        ? `<span class="flex items-center gap-1 text-green-600 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse-dot"></span><span data-zh="直播中" data-bo="ལངས་སྤྲོད་བྱེད་བཞིན།">直播中</span></span>`
+        : `<span class="text-gray-400 text-xs" data-zh="未开播" data-bo="མ་བྱུང་།">未开播</span>`;
+      // 认养者列表
+      const adoptersHtml = plan.adopters.length > 0
+        ? plan.adopters.map(a => `
+            <div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center text-primary text-xs font-medium">${a.name.charAt(0)}</div>
+                <div>
+                  <div class="text-sm text-gray-800">${a.name}</div>
+                  <div class="text-[10px] text-gray-400" data-zh="认养时长" data-bo="གློག་སྐྱེས་དུས་ཚོད།">认养时长</div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-xs text-primary font-medium">${a.duration}</div>
+                <div class="text-[10px] text-gray-400">${a.messages}条互动</div>
+              </div>
+            </div>
+          `).join('')
+        : '<div class="text-center text-gray-400 text-xs py-4" data-zh="暂无认养者" data-bo="གློག་སྐྱེས་མཁན་མེད།">暂无认养者</div>';
+
+      return `
+        <div class="bg-white rounded-xl overflow-hidden shadow-sm">
+          <!-- 顶部图片占位 -->
+          <div class="relative h-28" style="background: linear-gradient(135deg, #134E30, #1A6B42, #27AE60);">
+            <!-- 状态标签 -->
+            <div class="absolute top-2.5 right-2.5">
+              ${statusTag}
+            </div>
+            <!-- 品种名 -->
+            <div class="absolute bottom-2.5 left-3 text-white">
+              <div class="text-sm font-medium">${plan.breed}</div>
+              <div class="text-[10px] opacity-80">${plan.county}</div>
+            </div>
+          </div>
+
+          <!-- 认养进度 -->
+          <div class="px-3 pt-3">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs text-gray-500" data-zh="认养进度" data-bo="གློག་སྐྱེས་འཕེལ་རྒྱས།">认养进度</span>
+              <span class="text-xs font-medium text-gray-700">${plan.adoptedCount}/${plan.totalCount}</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar-fill" style="width: ${progress}%; background: ${plan.status === 'completed' ? '#9CA3AF' : '#1A6B42'};"></div>
+            </div>
+          </div>
+
+          <!-- 价格和周期 -->
+          <div class="px-3 pt-2 flex items-center justify-between">
+            <div class="flex items-baseline gap-1">
+              <span class="text-lg font-bold text-accent-red">¥${plan.price}</span>
+              <span class="text-[10px] text-gray-400">/${plan.priceUnit}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              ${liveStatus}
+              <span class="text-xs text-gray-400">
+                <i data-lucide="clock" class="w-3 h-3 inline-block"></i> ${plan.period}
+              </span>
+            </div>
+          </div>
+
+          <!-- 操作按钮 -->
+          <div class="px-3 pt-3 pb-2 flex gap-2 border-t border-gray-50 mt-2 pt-3">
+            <button onclick="toggleAdopters(${index})" class="flex-1 bg-primary-light text-primary text-xs py-1.5 rounded-lg hover:bg-opacity-80 transition font-medium" data-zh="管理认养者" data-bo="གློག་སྐྱེས་མཁན་དོ་དམ།">管理认养者</button>
+            <button onclick="showToast('直播功能演示，非真实直播')" class="flex-1 bg-gray-100 text-gray-600 text-xs py-1.5 rounded-lg hover:bg-gray-200 transition" data-zh="进入直播" data-bo="ལངས་སྤྲོད་དུ་ཕར།">进入直播</button>
+            <button onclick="showToast('编辑方案功能演示')" class="flex-1 bg-gray-100 text-gray-600 text-xs py-1.5 rounded-lg hover:bg-gray-200 transition" data-zh="编辑方案" data-bo="འཆས་འགོ་བཟོ་བཅོས།">编辑方案</button>
+          </div>
+
+          <!-- 认养者列表（手风琴折叠） -->
+          <div id="adopters-${index}" class="accordion-content px-3">
+            <div class="py-2">
+              ${adoptersHtml}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // 重新初始化Lucide图标
+    if (window.lucide) lucide.createIcons();
+  }
+
+  // ========== 认养者列表折叠切换 ==========
+  function toggleAdopters(index) {
+    const content = document.getElementById('adopters-' + index);
+    if (!content) return;
+    content.classList.toggle('open');
+  }
+
+  // ========== 初始化 ==========
+  document.addEventListener('DOMContentLoaded', () => {
+    renderAdoptionPlans();
+    initCommon();
+  });
+</script>
+
+</body>
+</html>

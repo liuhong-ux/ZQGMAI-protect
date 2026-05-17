@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>羌藏耕牧智护 - 我的农场</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- 自定义样式 -->
+  <link rel="stylesheet" href="../css/custom.css">
+</head>
+<body class="farming-body bg-[#F5F7FA] font-sans">
+  <div class="farming-container">
+
+    <!-- ===== 顶部状态栏 ===== -->
+    <header class="sticky top-0 z-30 bg-white px-4 py-3 flex items-center justify-between border-b border-gray-100">
+      <div class="flex items-center gap-3">
+        <!-- 农户头像 -->
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-dark to-primary flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+          扎
+        </div>
+        <span class="text-base font-semibold text-gray-800" data-zh="扎西" data-bo="བཀྲ་ཤིས་">扎西</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <!-- 通知铃铛 -->
+        <button class="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+          <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+          <span class="absolute top-1 right-1 w-2 h-2 bg-accent-red rounded-full"></span>
+        </button>
+        <!-- 双语切换 -->
+        <button id="lang-switch" class="lang-switch" data-zh="藏文" data-bo="中文">藏文</button>
+      </div>
+    </header>
+
+    <!-- ===== 农场概览大卡片 ===== -->
+    <div class="mx-4 mt-4 rounded-2xl overflow-hidden relative" style="background: linear-gradient(135deg, #134E30 0%, #1A6B42 100%);">
+      <!-- 牦牛剪影装饰 -->
+      <div class="absolute right-2 bottom-0 opacity-10">
+        <svg width="120" height="100" viewBox="0 0 120 100" fill="white">
+          <path d="M30 80 Q20 60 25 45 Q22 35 30 30 Q35 25 40 28 Q45 20 55 22 Q60 15 70 18 Q75 20 78 25 Q85 22 90 28 Q95 30 92 38 Q98 42 95 50 Q100 55 95 62 Q98 70 90 75 Q88 82 80 85 L30 85 Z"/>
+          <line x1="35" y1="85" x2="33" y2="95" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <line x1="50" y1="85" x2="48" y2="95" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <line x1="65" y1="85" x2="63" y2="95" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <line x1="78" y1="85" x2="76" y2="95" stroke="white" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="relative z-10 px-5 py-5 text-white">
+        <!-- 农场名称 -->
+        <h2 class="text-lg font-bold mb-1" data-zh="扎西家庭牧场" data-bo="བཀྲ་ཤིས་ཁྱིམ་ཚང་འཕེལ་རྟེན་">扎西家庭牧场</h2>
+        <!-- 位置信息 -->
+        <div class="flex items-center gap-1 text-white/70 text-sm mb-4">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+          <span data-zh="红原县邛溪镇 | 海拔 3,520m" data-bo="རྡུང་ཡུལ་རྫོང་ཆོས་ཤད་གྲོང་རྩེ | སྐར་རྩེས་མ་3,520">红原县邛溪镇 | 海拔 3,520m</span>
+        </div>
+        <!-- 数据行 -->
+        <div class="flex items-center gap-3 text-sm mb-3">
+          <div class="flex-1 bg-white/15 rounded-lg px-3 py-2 text-center backdrop-blur-sm">
+            <div class="text-white/70 text-xs" data-zh="麦洼牦牛" data-bo="མ་བོ་རྔ་པོ་">麦洼牦牛</div>
+            <div class="text-lg font-bold">156<span class="text-xs font-normal ml-0.5" data-zh="头" data-bo="དྲུག">头</span></div>
+          </div>
+          <div class="flex-1 bg-white/15 rounded-lg px-3 py-2 text-center backdrop-blur-sm">
+            <div class="text-white/70 text-xs" data-zh="草场" data-bo="རྩི་ཤུབས་">草场</div>
+            <div class="text-lg font-bold">2,400<span class="text-xs font-normal ml-0.5" data-zh="亩" data-bo="མུ་ཁэ">亩</span></div>
+          </div>
+          <div class="flex-1 bg-white/15 rounded-lg px-3 py-2 text-center backdrop-blur-sm">
+            <div class="text-white/70 text-xs" data-zh="本月收入" data-bo="ཟླ་འདིའི་ཡོང་འབབ་">本月收入</div>
+            <div class="text-lg font-bold">¥12,800</div>
+          </div>
+        </div>
+        <!-- 标签行 -->
+        <div class="flex flex-wrap gap-2">
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-white/20 text-white backdrop-blur-sm" data-zh="生态认证" data-bo="སྐྱེ་དངོས་བདག་དཔེ་">生态认证</span>
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-white/20 text-white backdrop-blur-sm" data-zh="区块链溯源" data-bo="བྱང་ཁྲིམས་རིང་འཁོར་ཁྱབ་འདྲེས་">区块链溯源</span>
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-white/20 text-white backdrop-blur-sm" data-zh="有机种养" data-bo="སྐྱེ་དངོས་སྦྱོང་གསོ་">有机种养</span>
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-white/20 text-white backdrop-blur-sm" data-zh="麦洼牦牛" data-bo="མ་བོ་རྔ་པོ་">麦洼牦牛</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 快捷操作网格 ===== -->
+    <div class="px-4 mt-5">
+      <div class="grid grid-cols-4 gap-3">
+        <!-- AI种养助手 -->
+        <a href="ai-assistant.html" class="flex flex-col items-center gap-1.5 py-3 bg-white rounded-xl shadow-sm hover:shadow-md transition">
+          <div class="w-10 h-10 rounded-xl bg-primary-light flex items-center justify-center">
+            <i data-lucide="brain" class="w-5 h-5 text-primary"></i>
+          </div>
+          <span class="text-xs text-gray-700" data-zh="AI种养助手" data-bo="AIསྦྱོང་གསོ་རོགས་རམ">AI种养助手</span>
+        </a>
+        <!-- 云认养管理 -->
+        <a href="adoption.html" class="flex flex-col items-center gap-1.5 py-3 bg-white rounded-xl shadow-sm hover:shadow-md transition">
+          <div class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center">
+            <i data-lucide="heart" class="w-5 h-5 text-red-500"></i>
+          </div>
+          <span class="text-xs text-gray-700" data-zh="云认养管理" data-bo="གློག་སྐྱེས་དོ་དམ་">云认养管理</span>
+        </a>
+        <!-- AIGC营销 -->
+        <a href="marketing.html" class="flex flex-col items-center gap-1.5 py-3 bg-white rounded-xl shadow-sm hover:shadow-md transition">
+          <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center">
+            <i data-lucide="sparkles" class="w-5 h-5 text-purple-500"></i>
+          </div>
+          <span class="text-xs text-gray-700" data-zh="AIGC营销" data-bo="AIGCཚོང་གཉེར་">AIGC营销</span>
+        </a>
+        <!-- 溯源管理 -->
+        <a href="trace.html" class="flex flex-col items-center gap-1.5 py-3 bg-white rounded-xl shadow-sm hover:shadow-md transition">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+            <i data-lucide="scan-line" class="w-5 h-5 text-blue-500"></i>
+          </div>
+          <span class="text-xs text-gray-700" data-zh="溯源管理" data-bo="ཁྱབ་འདྲེས་དོ་དམ་">溯源管理</span>
+        </a>
+        <!-- 牲畜档案 -->
+        <a href="yak-profile.html" class="flex flex-col items-center gap-1.5 py-3 bg-white rounded-xl shadow-sm hover:shadow-md transition">
+          <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center">
+            <i data-lucide="file-text" class="w-5 h-5 text-orange-500"></i>
+          </div>
+          <span class="text-xs text-gray-700" data-zh="牲畜档案" data-bo="ཕྲུག་གསོག་ཡིག་ཚང་">牲畜档案</span>
+        </a>
+        <!-- 气象服务 -->
+        <a href="#" class="flex flex-col items-center gap-1.5 py-3 bg-white rounded-xl shadow-sm hover:shadow-md transition">
+          <div class="w-10 h-10 rounded-xl bg-cyan-50 flex items-center justify-center">
+            <i data-lucide="cloud-sun" class="w-5 h-5 text-cyan-500"></i>
+          </div>
+          <span class="text-xs text-gray-700" data-zh="气象服务" data-bo="གནམ་གཤིས་ཞབས་ཞུ།">气象服务</span>
+        </a>
+        <!-- 创业助手 -->
+        <a href="startup.html" class="flex flex-col items-center gap-1.5 py-3 bg-white rounded-xl shadow-sm hover:shadow-md transition">
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+            <i data-lucide="rocket" class="w-5 h-5 text-indigo-500"></i>
+          </div>
+          <span class="text-xs text-gray-700" data-zh="创业助手" data-bo="ལས་གཏོད་རོགས་རམ།">创业助手</span>
+        </a>
+        <!-- 系统设置 -->
+        <a href="settings.html" class="flex flex-col items-center gap-1.5 py-3 bg-white rounded-xl shadow-sm hover:shadow-md transition">
+          <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+            <i data-lucide="settings" class="w-5 h-5 text-gray-500"></i>
+          </div>
+          <span class="text-xs text-gray-700" data-zh="系统设置" data-bo="གཞི་རྟེན་བགོ་འདོད།">系统设置</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ===== 今日待办 ===== -->
+    <div class="px-4 mt-5">
+      <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-1.5" data-zh="今日待办" data-bo="དི་རིང་བྱེད་དགོས་པ།">
+        <i data-lucide="list-checks" class="w-4 h-4 text-primary"></i>
+        今日待办
+      </h3>
+      <div class="space-y-2.5">
+        <!-- 待办1：红色角标 -->
+        <div class="bg-white rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm">
+          <div class="w-9 h-9 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0 relative">
+            <i data-lucide="bell" class="w-4.5 h-4.5 text-red-500"></i>
+            <span class="absolute -top-1 -right-1 w-4.5 h-4.5 bg-accent-red text-white text-[10px] font-bold rounded-full flex items-center justify-center">5</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 truncate" data-zh="查看5条AI预警通知（含2条设备故障）" data-bo="AIཉེན་བརྡའི་བརྙན་ཐོ་5དང་ལེན་བྱེད་（སྒྲིག་ཆས་སྤྱོད་མི་ཚོདས་2ཡོད།）">查看5条AI预警通知（含2条设备故障）</p>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 flex-shrink-0"></i>
+        </div>
+        <!-- 待办2：橙色 -->
+        <div class="bg-white rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm">
+          <div class="w-9 h-9 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="syringe" class="w-4.5 h-4.5 text-accent-orange"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 truncate" data-zh="牦牛疫苗接种提醒（12头）" data-bo="རྔ་པོར་རིགས་སྐོར་སྨན་རྟགས་དྲན་སྐུལ།（12དྲུག）">牦牛疫苗接种提醒（12头）</p>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 flex-shrink-0"></i>
+        </div>
+        <!-- 待办3：蓝色 -->
+        <div class="bg-white rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm">
+          <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="video" class="w-4.5 h-4.5 text-blue-500"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 truncate" data-zh="云认养用户张XX发起牧场直播互动" data-bo="གློག་སྐྱེས་སྤྱོད་པ་ཀྲང་XXགིས་འཕེལ་རྟེན་ལྟ་སྐབས་འབྲེལ་བརྗོད་བྱས།">云认养用户张XX发起牧场直播互动</p>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 flex-shrink-0"></i>
+        </div>
+        <!-- 待办4：绿色 -->
+        <div class="bg-white rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm">
+          <div class="w-9 h-9 rounded-lg bg-primary-light flex items-center justify-center flex-shrink-0">
+            <i data-lucide="map-pin" class="w-4.5 h-4.5 text-primary"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 truncate" data-zh="本周牧场巡检计划" data-bo="བརྒྱུད་འདིའི་འཕེལ་རྟེན་རྒྱུན་ཞིབ་བརྩམས་འཇུག">本周牧场巡检计划</p>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 flex-shrink-0"></i>
+        </div>
+        <!-- 待办5：紫色 -->
+        <div class="bg-white rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm">
+          <div class="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+            <i data-lucide="graduation-cap" class="w-4.5 h-4.5 text-purple-500"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 truncate" data-zh="创业培训报名：电商运营实操（5月25日）" data-bo="ལས་གཏོད་སྦྱོང་བརྡར་ཐོ་བྱང་། གློག་ཚོང་སྤྱོད་གཏོང་དངོས་གཞི།（ཟླ་5ཚེས་25）">创业培训报名：电商运营实操（5月25日）</p>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 flex-shrink-0"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 智能提醒卡片 ===== -->
+    <div class="px-4 mt-5">
+      <div class="bg-gradient-to-r from-primary-light to-white rounded-xl px-4 py-4 border border-primary/10">
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+            <i data-lucide="brain" class="w-4 h-4 text-primary"></i>
+          </div>
+          <h3 class="text-sm font-semibold text-gray-800" data-zh="本周种养建议" data-bo="བརྒྱུད་འདིའི་སྦྱོང་གསོ་འདུ་ཤེས།">本周种养建议</h3>
+        </div>
+        <p class="text-sm text-gray-600 leading-relaxed" data-zh="根据近期气象数据和NDVI指数分析，建议本周减少补饲量，牦牛逐步转场至夏季牧场。草场植被指数回升，可适当增加放牧时间。注意预防突发降温对幼畜的影响。" data-bo="ཉེར་དུས་ཀྱི་གནམ་གཤིས་གཞི་གྲངས་དང་NDVIའབྲེལ་གྲངས་བརྟག་དཔྱད་བྱས་པ་བརྩིས་ན། བརྒྱུད་འདིར་ཟས་སྦྱོར་ཚད་ཆེན་ཉུང་དུ་གཏོང་འདོད། རྔ་པོ་དབྱར་དུས་འཕེལ་རྟེན་ལ་རྐྱེན་གྱིས་སྤོ་རགས།">根据近期气象数据和NDVI指数分析，建议本周减少补饲量，牦牛逐步转场至夏季牧场。草场植被指数回升，可适当增加放牧时间。注意预防突发降温对幼畜的影响。</p>
+        <button class="mt-3 text-sm text-primary font-medium flex items-center gap-1 hover:underline" data-zh="查看详情" data-bo="ཞིབ་ཕྲ་ལྟ་སྐབས།">
+          查看详情
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== 数据趋势 ===== -->
+    <div class="px-4 mt-5 mb-6">
+      <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-1.5" data-zh="数据趋势" data-bo="གཞི་གྲངས་འཕར་འགྱུར།">
+        <i data-lucide="trending-up" class="w-4 h-4 text-primary"></i>
+        数据趋势
+      </h3>
+      <div class="grid grid-cols-2 gap-3">
+        <!-- 近7天健康指数 -->
+        <div class="bg-white rounded-xl p-3 shadow-sm">
+          <div class="text-xs text-gray-500 mb-2" data-zh="近7天健康指数" data-bo="ཉེ་དུས་7ཉིན་གྱི་བདེ་ཐང་འབྲེལ་གྲངས།">近7天健康指数</div>
+          <div class="h-24">
+            <canvas id="health-chart"></canvas>
+          </div>
+        </div>
+        <!-- 牧场环境指标 -->
+        <div class="bg-white rounded-xl p-3 shadow-sm">
+          <div class="text-xs text-gray-500 mb-2" data-zh="牧场环境指标" data-bo="འཕེལ་རྟེན་ཁམས་གཤིས་ཚད་གཞི།">牧场环境指标</div>
+          <div class="h-24">
+            <canvas id="env-chart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部Tab栏容器 -->
+    <div id="tabbar"></div>
+  </div>
+
+  <!-- 公共JS -->
+  <script src="../js/mock-data.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="../js/charts.js"></script>
+
+  <script>
+    // 页面初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('tabbar').innerHTML = renderFarmingTabBar('home');
+      initCommon();
+      initHealthMiniChart('health-chart');
+      initEnvMiniChart('env-chart');
+    });
+  </script>
+</body>
+</html>

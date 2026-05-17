@@ -1,0 +1,20 @@
+# 构建产物
+target/
+*.war
+
+# IDE 配置（非共享部分）
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/shelf/
+.idea/dictionaries/
+.idea/libraries/
+.idea/artifacts/
+*.iws
+*.ipr
+
+# OS 文件
+.DS_Store
+Thumbs.db
+
+# 日志
+*.log

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>羌藏耕牧智护 - 溯源码管理</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- 自定义样式 -->
+  <link rel="stylesheet" href="../css/custom.css">
+  <style>
+    /* Tab 切换动画 */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .tab-btn.active { color: #1A6B42; border-bottom-color: #1A6B42; }
+
+    /* 状态徽章 */
+    .badge-valid { background: #E8F5EE; color: #1A6B42; }
+    .badge-expired { background: #F3F4F6; color: #9CA3AF; }
+    .badge-recall { background: #FDE8E8; color: #E74C3C; }
+
+    /* 图表容器 */
+    .chart-wrapper { height: 200px; }
+    .chart-wrapper-sm { height: 160px; }
+  </style>
+</head>
+<body class="farming-body bg-[#F5F7FA] font-sans">
+  <div class="farming-container min-h-screen pb-20">
+
+    <!-- ===== 顶部导航 ===== -->
+    <header class="sticky top-0 z-30 bg-white px-4 py-3 flex items-center justify-between border-b border-gray-100">
+      <div class="flex items-center gap-3">
+        <a href="farm-home.html" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+          <i data-lucide="arrow-left" class="w-5 h-5 text-gray-600"></i>
+        </a>
+        <h1 class="text-lg font-semibold text-gray-800">溯源码管理</h1>
+      </div>
+      <button class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark transition">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        <span>批量生成</span>
+      </button>
+    </header>
+
+    <!-- ===== 数据概览 ===== -->
+    <div class="px-4 mt-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-primary-light flex items-center justify-center">
+              <i data-lucide="qr-code" class="w-4.5 h-4.5 text-primary"></i>
+            </div>
+            <span class="text-xs text-gray-500">已生成溯源码</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">1,847 <span class="text-sm font-normal text-gray-500">个</span></div>
+          <div class="mt-1 text-xs text-gray-400">较上月 +12.5%</div>
+        </div>
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
+              <i data-lucide="scan" class="w-4.5 h-4.5 text-secondary"></i>
+            </div>
+            <span class="text-xs text-gray-500">本月扫码次数</span>
+          </div>
+          <div class="text-xl font-bold text-gray-800">12,356 <span class="text-sm font-normal text-gray-500">次</span></div>
+          <div class="mt-1 text-xs text-green-600">较上月 +18.3%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 功能 Tab ===== -->
+    <div class="px-4 mt-4">
+      <div class="flex border-b border-gray-200">
+        <button class="tab-btn active flex-1 pb-2.5 text-sm font-medium text-primary border-b-2 border-primary transition" data-tab="all">
+          全部溯源码
+        </button>
+        <button class="tab-btn flex-1 pb-2.5 text-sm font-medium text-gray-500 border-b-2 border-transparent transition" data-tab="batch">
+          批次管理
+        </button>
+        <button class="tab-btn flex-1 pb-2.5 text-sm font-medium text-gray-500 border-b-2 border-transparent transition" data-tab="stats">
+          扫码统计
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== Tab 1: 全部溯源码 ===== -->
+    <div id="tab-all" class="tab-panel active px-4 mt-4">
+      <!-- 筛选栏 -->
+      <div class="flex gap-2 mb-3">
+        <select id="filter-breed" class="flex-1 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:border-primary appearance-none">
+          <option value="">全部产品</option>
+          <option value="麦洼牦牛奶">麦洼牦牛奶</option>
+          <option value="小金苹果">小金苹果</option>
+          <option value="茂县青脆李">茂县青脆李</option>
+          <option value="茂县甜樱桃">茂县甜樱桃</option>
+          <option value="牦牛肉干">牦牛肉干</option>
+        </select>
+        <select id="filter-status" class="flex-1 px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:border-primary appearance-none">
+          <option value="">全部状态</option>
+          <option value="valid">有效</option>
+          <option value="expired">过期</option>
+          <option value="recall">召回</option>
+        </select>
+      </div>
+      <!-- 溯源码列表 -->
+      <div id="trace-list" class="space-y-3"></div>
+      <!-- 空状态 -->
+      <div id="empty-state" class="hidden flex flex-col items-center justify-center py-16 text-gray-400">
+        <i data-lucide="scan-line" class="w-16 h-16 mb-3 text-gray-300"></i>
+        <p class="text-sm">没有找到匹配的溯源码</p>
+        <p class="text-xs mt-1">请尝试调整筛选条件</p>
+      </div>
+    </div>
+
+    <!-- ===== Tab 2: 批次管理 ===== -->
+    <div id="tab-batch" class="tab-panel px-4 mt-4">
+      <div id="batch-list" class="space-y-3"></div>
+    </div>
+
+    <!-- ===== Tab 3: 扫码统计 ===== -->
+    <div id="tab-stats" class="tab-panel px-4 mt-4">
+      <!-- 地区分布 -->
+      <div class="bg-white rounded-xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
+          <i data-lucide="map" class="w-4 h-4 text-primary"></i>
+          地区分布
+        </h3>
+        <div class="chart-wrapper">
+          <canvas id="scan-dist-chart"></canvas>
+        </div>
+      </div>
+      <!-- 近30天趋势 -->
+      <div class="bg-white rounded-xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
+          <i data-lucide="trending-up" class="w-4 h-4 text-primary"></i>
+          近30天扫码趋势
+        </h3>
+        <div class="chart-wrapper">
+          <canvas id="scan-trend-chart"></canvas>
+        </div>
+      </div>
+      <!-- 消费者互动 -->
+      <div class="bg-white rounded-xl p-4 shadow-sm">
+        <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-1.5">
+          <i data-lucide="users" class="w-4 h-4 text-primary"></i>
+          消费者互动
+        </h3>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="text-center py-3 bg-gray-50 rounded-lg">
+            <div class="text-lg font-bold text-gray-800">8.4 万</div>
+            <div class="text-xs text-gray-500 mt-1">累计扫码用户</div>
+          </div>
+          <div class="text-center py-3 bg-gray-50 rounded-lg">
+            <div class="text-lg font-bold text-gray-800">45 <span class="text-xs font-normal">秒</span></div>
+            <div class="text-xs text-gray-500 mt-1">平均停留时长</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部Tab栏容器 -->
+    <div id="tabbar"></div>
+  </div>
+
+  <!-- 公共JS -->
+  <script src="../js/mock-data.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="../js/charts.js"></script>
+
+  <script>
+    // ========== 状态映射 ==========
+    const STATUS_MAP = {
+      valid: { label: '有效', class: 'badge-valid' },
+      expired: { label: '过期', class: 'badge-expired' },
+      recall: { label: '召回', class: 'badge-recall' }
+    };
+
+    // ========== 批次数据 ==========
+    const BATCH_DATA = [
+      { id: 'HY-20260515', product: '麦洼牦牛奶', breed: '麦洼牦牛', count: 200, status: 'valid', createdAt: '2026-05-15' },
+      { id: 'XJ-20260510', product: '小金苹果', breed: '小金苹果（金冠系列）', count: 150, status: 'valid', createdAt: '2026-05-10' },
+      { id: 'MX-20260508', product: '茂县青脆李', breed: '茂县青脆李', count: 100, status: 'valid', createdAt: '2026-05-08' }
+    ];
+
+    // ========== 渲染溯源码卡片 ==========
+    function renderTraceCard(item) {
+      const status = STATUS_MAP[item.status] || STATUS_MAP.valid;
+      return `
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-lg bg-primary-light flex items-center justify-center flex-shrink-0">
+              <i data-lucide="qr-code" class="w-5 h-5 text-primary"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-sm font-semibold text-gray-800">${item.id}</span>
+                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${status.class}">${status.label}</span>
+              </div>
+              <p class="text-xs text-gray-500 mb-1">${item.product} · ${item.breed}</p>
+              <div class="flex items-center gap-3 text-xs text-gray-400">
+                <span>创建: ${item.createTime}</span>
+                <span>扫码: ${item.scanCount}次</span>
+              </div>
+              <div class="flex items-center gap-3 mt-2.5 pt-2.5 border-t border-gray-100">
+                <button class="text-xs text-primary font-medium hover:underline">查看详情</button>
+                <button class="text-xs text-gray-500 hover:text-gray-700">复制链接</button>
+                <button class="text-xs text-gray-500 hover:text-gray-700">下载二维码</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ========== 渲染批次卡片 ==========
+    function renderBatchCard(item) {
+      const status = STATUS_MAP[item.status] || STATUS_MAP.valid;
+      return `
+        <div class="bg-white rounded-xl p-4 shadow-sm">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+              <i data-lucide="layers" class="w-5 h-5 text-blue-500"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-sm font-semibold text-gray-800">${item.id}</span>
+                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${status.class}">${status.label}</span>
+              </div>
+              <p class="text-xs text-gray-500 mb-1">${item.product} · ${item.breed}</p>
+              <div class="flex items-center gap-3 text-xs text-gray-400">
+                <span>数量: ${item.count}个</span>
+                <span>创建日期: ${item.createdAt}</span>
+              </div>
+              <div class="flex items-center gap-3 mt-2.5 pt-2.5 border-t border-gray-100">
+                <button class="text-xs text-primary font-medium hover:underline">查看批次详情</button>
+                <button class="text-xs text-gray-500 hover:text-gray-700">导出报告</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ========== 筛选与渲染 ==========
+    function renderTraceList() {
+      const breed = document.getElementById('filter-breed').value;
+      const status = document.getElementById('filter-status').value;
+
+      let filtered = window.MockData.traceCodes.filter(item => {
+        if (breed && item.product !== breed) return false;
+        if (status && item.status !== status) return false;
+        return true;
+      });
+
+      const listEl = document.getElementById('trace-list');
+      const emptyEl = document.getElementById('empty-state');
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = '';
+        emptyEl.classList.remove('hidden');
+      } else {
+        emptyEl.classList.add('hidden');
+        listEl.innerHTML = filtered.map(renderTraceCard).join('');
+      }
+
+      // 重新初始化图标
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    function renderBatchList() {
+      document.getElementById('batch-list').innerHTML = BATCH_DATA.map(renderBatchCard).join('');
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    // ========== Tab 切换 ==========
+    function initTabs() {
+      const btns = document.querySelectorAll('.tab-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          btns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+          document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+
+          // 如果切到统计 Tab，初始化图表
+          if (btn.dataset.tab === 'stats') {
+            setTimeout(() => {
+              initScanDistChart('scan-dist-chart');
+              initScanTrendChart('scan-trend-chart');
+            }, 100);
+          }
+        });
+      });
+    }
+
+    // ========== 页面初始化 ==========
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('tabbar').innerHTML = renderFarmingTabBar('user');
+      initCommon();
+      initTabs();
+      renderTraceList();
+      renderBatchList();
+
+      // 筛选变更事件
+      document.getElementById('filter-breed').addEventListener('change', renderTraceList);
+      document.getElementById('filter-status').addEventListener('change', renderTraceList);
+    });
+  </script>
+</body>
+</html>

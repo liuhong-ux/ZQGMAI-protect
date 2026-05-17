@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>羌藏耕牧智护 - AI种养助手</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- 自定义样式 -->
+  <link rel="stylesheet" href="../css/custom.css">
+  <style>
+    /* 聊天区域样式 */
+    .chat-area {
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    .chat-area::-webkit-scrollbar {
+      width: 3px;
+    }
+    .chat-area::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 4px;
+    }
+
+    /* 用户消息气泡 */
+    .chat-bubble-user {
+      background: #E8F5EE;
+      border-radius: 16px 16px 4px 16px;
+      max-width: 85%;
+      margin-left: auto;
+    }
+
+    /* AI消息气泡 */
+    .chat-bubble-ai {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px 16px 16px 4px;
+      max-width: 85%;
+    }
+
+    /* AI头像 */
+    .ai-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1A6B42, #134E30);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* 快速问题横向滚动 */
+    .quick-questions-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .quick-questions-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* 打字指示器 */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 12px 16px;
+    }
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #9CA3AF;
+      animation: typingBounce 1.4s ease-in-out infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.3; }
+      40% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* 输入框 */
+    .chat-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      flex: 1;
+      font-size: 14px;
+      color: #374151;
+    }
+    .chat-input::placeholder {
+      color: #9CA3AF;
+    }
+
+    /* 快速入口按钮选中态 */
+    .quick-entry-btn {
+      transition: all 0.2s ease;
+    }
+    .quick-entry-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* 消息淡入 */
+    .msg-fade-in {
+      animation: fadeInUp 0.3s ease;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="farming-body bg-[#F5F7FA] font-sans">
+  <div class="farming-container flex flex-col min-h-screen">
+
+    <!-- ===== 顶部导航栏 ===== -->
+    <header class="sticky top-0 z-30 bg-white px-4 py-3 flex items-center justify-between border-b border-gray-100">
+      <div class="flex items-center gap-3">
+        <a href="farm-home.html" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+          <i data-lucide="arrow-left" class="w-5 h-5 text-gray-600"></i>
+        </a>
+        <h1 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+          <i data-lucide="bot" class="w-5 h-5 text-primary"></i>
+          AI种养助手
+        </h1>
+      </div>
+      <button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition" title="历史记录">
+        <i data-lucide="clock" class="w-5 h-5 text-gray-600"></i>
+      </button>
+    </header>
+
+    <!-- ===== 快速入口按钮 ===== -->
+    <div class="px-4 pt-3 pb-2">
+      <div class="grid grid-cols-4 gap-2">
+        <button class="quick-entry-btn flex flex-col items-center gap-1 py-2.5 bg-white rounded-xl shadow-sm hover:shadow-md transition" data-preset="疾病诊断">
+          <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+            <i data-lucide="stethoscope" class="w-4 h-4 text-red-500"></i>
+          </div>
+          <span class="text-[11px] text-gray-700">疾病诊断</span>
+        </button>
+        <button class="quick-entry-btn flex flex-col items-center gap-1 py-2.5 bg-white rounded-xl shadow-sm hover:shadow-md transition" data-preset="种养咨询">
+          <div class="w-8 h-8 rounded-lg bg-primary-light flex items-center justify-center">
+            <i data-lucide="message-square" class="w-4 h-4 text-primary"></i>
+          </div>
+          <span class="text-[11px] text-gray-700">种养咨询</span>
+        </button>
+        <button class="quick-entry-btn flex flex-col items-center gap-1 py-2.5 bg-white rounded-xl shadow-sm hover:shadow-md transition" data-preset="环境分析">
+          <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+            <i data-lucide="cloud-sun" class="w-4 h-4 text-blue-500"></i>
+          </div>
+          <span class="text-[11px] text-gray-700">环境分析</span>
+        </button>
+        <button class="quick-entry-btn flex flex-col items-center gap-1 py-2.5 bg-white rounded-xl shadow-sm hover:shadow-md transition" data-preset="政策查询">
+          <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
+            <i data-lucide="file-text" class="w-4 h-4 text-orange-500"></i>
+          </div>
+          <span class="text-[11px] text-gray-700">政策查询</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== 聊天区域 ===== -->
+    <div id="chat-area" class="chat-area flex-1 px-4 py-3 overflow-y-auto space-y-4 min-h-0"></div>
+
+    <!-- ===== 快速问题气泡 ===== -->
+    <div class="px-4 py-2 border-t border-gray-100 bg-white">
+      <div class="quick-questions-scroll flex gap-2 pb-1">
+        <button class="quick-q-btn flex-shrink-0 px-3.5 py-1.5 bg-primary-light text-primary text-xs rounded-full border border-primary/20 hover:bg-primary hover:text-white transition whitespace-nowrap">
+          麦洼牦牛常见疾病
+        </button>
+        <button class="quick-q-btn flex-shrink-0 px-3.5 py-1.5 bg-primary-light text-primary text-xs rounded-full border border-primary/20 hover:bg-primary hover:text-white transition whitespace-nowrap">
+          小金苹果花期管理
+        </button>
+        <button class="quick-q-btn flex-shrink-0 px-3.5 py-1.5 bg-primary-light text-primary text-xs rounded-full border border-primary/20 hover:bg-primary hover:text-white transition whitespace-nowrap">
+          茂县李子夏季修剪
+        </button>
+        <button class="quick-q-btn flex-shrink-0 px-3.5 py-1.5 bg-primary-light text-primary text-xs rounded-full border border-primary/20 hover:bg-primary hover:text-white transition whitespace-nowrap">
+          牦牛北斗项圈使用
+        </button>
+        <button class="quick-q-btn flex-shrink-0 px-3.5 py-1.5 bg-primary-light text-primary text-xs rounded-full border border-primary/20 hover:bg-primary hover:text-white transition whitespace-nowrap">
+          川贝母种植要点
+        </button>
+        <button class="quick-q-btn flex-shrink-0 px-3.5 py-1.5 bg-primary-light text-primary text-xs rounded-full border border-primary/20 hover:bg-primary hover:text-white transition whitespace-nowrap">
+          草场退化怎么处理
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== 底部输入区域 ===== -->
+    <div class="bg-white border-t border-gray-100 px-3 py-2.5 flex items-center gap-2.5">
+      <button id="upload-btn" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition flex-shrink-0" title="上传">
+        <i data-lucide="plus" class="w-5 h-5 text-gray-500"></i>
+      </button>
+      <div class="flex-1 flex items-center bg-gray-100 rounded-full px-4 py-2">
+        <input id="chat-input" type="text" class="chat-input" placeholder="描述您的问题..." autocomplete="off">
+      </div>
+      <button id="send-btn" class="w-9 h-9 flex items-center justify-center rounded-full bg-primary hover:bg-primary-dark transition flex-shrink-0">
+        <i data-lucide="arrow-up" class="w-5 h-5 text-white"></i>
+      </button>
+    </div>
+
+    <!-- 底部Tab栏 -->
+    <div id="tabbar"></div>
+  </div>
+
+  <!-- 公共JS -->
+  <script src="../js/mock-data.js"></script>
+  <script src="../js/components.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 渲染底部Tab栏
+      document.getElementById('tabbar').innerHTML = renderFarmingTabBar('bot');
+      initCommon();
+
+      const chatArea = document.getElementById('chat-area');
+      const chatInput = document.getElementById('chat-input');
+      const sendBtn = document.getElementById('send-btn');
+      const uploadBtn = document.getElementById('upload-btn');
+
+      // ========== 工具函数 ==========
+      function formatTime(date) {
+        return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', hour12: false });
+      }
+
+      function getCurrentTimeStr() {
+        return formatTime(new Date());
+      }
+
+      function scrollToBottom() {
+        requestAnimationFrame(() => {
+          chatArea.scrollTop = chatArea.scrollHeight;
+        });
+      }
+
+      // ========== 生成消息气泡 ==========
+      function createMessageBubble(role, content, time) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'msg-fade-in';
+
+        if (role === 'user') {
+          wrapper.innerHTML = `
+            <div class="chat-bubble-user px-4 py-3">
+              <p class="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">${escapeHtml(content)}</p>
+              <div class="text-[11px] text-gray-400 mt-2 text-right">${time}</div>
+            </div>
+          `;
+        } else {
+          wrapper.innerHTML = `
+            <div class="flex items-start gap-2.5">
+              <div class="ai-avatar">
+                <i data-lucide="brain" class="w-3.5 h-3.5 text-white"></i>
+              </div>
+              <div class="chat-bubble-ai px-4 py-3">
+                <p class="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">${escapeHtml(content)}</p>
+                <div class="text-[11px] text-gray-400 mt-2">${time}</div>
+              </div>
+            </div>
+          `;
+        }
+
+        return wrapper;
+      }
+
+      // ========== HTML转义 ==========
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // ========== 添加消息 ==========
+      function addMessage(role, content, time) {
+        const bubble = createMessageBubble(role, content, time);
+        chatArea.appendChild(bubble);
+        // 重新初始化lucide图标
+        if (window.lucide) {
+          lucide.createIcons();
+        }
+        scrollToBottom();
+      }
+
+      // ========== 加载初始聊天记录 ==========
+      function loadInitialMessages() {
+        if (window.MockData && MockData.chatMessages) {
+          MockData.chatMessages.forEach(msg => {
+            addMessage(msg.role, msg.content, msg.time.split(' ')[1] || msg.time);
+          });
+        }
+      }
+
+      // ========== 打字指示器 ==========
+      let typingIndicatorEl = null;
+
+      function showTypingIndicator() {
+        if (typingIndicatorEl) return;
+        const wrapper = document.createElement('div');
+        wrapper.id = 'typing-indicator-wrapper';
+        wrapper.className = 'msg-fade-in';
+        wrapper.innerHTML = `
+          <div class="flex items-start gap-2.5">
+            <div class="ai-avatar">
+              <i data-lucide="brain" class="w-3.5 h-3.5 text-white"></i>
+            </div>
+            <div class="chat-bubble-ai px-4 py-3">
+              <div class="typing-indicator">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+              </div>
+            </div>
+          </div>
+        `;
+        chatArea.appendChild(wrapper);
+        typingIndicatorEl = wrapper;
+        if (window.lucide) {
+          lucide.createIcons();
+        }
+        scrollToBottom();
+      }
+
+      function hideTypingIndicator() {
+        if (typingIndicatorEl) {
+          typingIndicatorEl.remove();
+          typingIndicatorEl = null;
+        }
+      }
+
+      // ========== 根据关键词获取预设回复 ==========
+      function getPresetReply(text) {
+        if (!window.MockData || !MockData.chatPresets) return null;
+
+        // 按优先级检查关键词
+        if (text.includes('牦牛')) return MockData.chatPresets['牦牛'];
+        if (text.includes('苹果')) return MockData.chatPresets['苹果'];
+        if (text.includes('李子')) return MockData.chatPresets['李子'];
+        if (text.includes('樱桃')) return MockData.chatPresets['樱桃'];
+        if (text.includes('果树')) return MockData.chatPresets['果树'];
+        if (text.includes('天气') || text.includes('气象') || text.includes('温度')) return MockData.chatPresets['气象'];
+        if (text.includes('草场') || text.includes('牧草')) return MockData.chatPresets['草场'];
+        if (text.includes('草原')) return MockData.chatPresets['草原'];
+
+        return null;
+      }
+
+      // ========== 发送消息 ==========
+      function sendMessage(text) {
+        if (!text || !text.trim()) return;
+        text = text.trim();
+
+        // 添加用户消息
+        addMessage('user', text, getCurrentTimeStr());
+
+        // 显示打字指示器
+        showTypingIndicator();
+
+        // 获取预设回复
+        const preset = getPresetReply(text);
+        const delay = preset ? 1000 : 1500;
+
+        setTimeout(() => {
+          hideTypingIndicator();
+          const reply = preset || '建议您结合实际情况咨询当地农业技术人员，或拨打12316三农服务热线获取专业指导。';
+          addMessage('ai', reply, getCurrentTimeStr());
+        }, delay);
+
+        // 清空输入框
+        chatInput.value = '';
+      }
+
+      // ========== 事件绑定 ==========
+
+      // 发送按钮
+      sendBtn.addEventListener('click', () => {
+        sendMessage(chatInput.value);
+      });
+
+      // 回车发送
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          sendMessage(chatInput.value);
+        }
+      });
+
+      // 快速问题按钮
+      document.querySelectorAll('.quick-q-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          sendMessage(btn.textContent.trim());
+        });
+      });
+
+      // 快速入口按钮
+      document.querySelectorAll('.quick-entry-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const preset = btn.getAttribute('data-preset');
+          const questions = {
+            '疾病诊断': '我想了解牦牛的常见疾病和预防方法',
+            '种养咨询': '我想咨询一下苹果种植的管理技术',
+            '环境分析': '请分析一下当前草场的环境状况',
+            '政策查询': '我想了解最新的种养殖补贴政策'
+          };
+          sendMessage(questions[preset] || preset);
+        });
+      });
+
+      // 上传按钮（UI演示）
+      uploadBtn.addEventListener('click', () => {
+        if (typeof showToast === 'function') {
+          showToast('上传功能即将开放');
+        }
+      });
+
+      // 历史记录按钮
+      document.querySelector('header button[title="历史记录"]').addEventListener('click', () => {
+        if (typeof showToast === 'function') {
+          showToast('历史记录功能即将开放');
+        }
+      });
+
+      // ========== 初始化 ==========
+      loadInitialMessages();
+    });
+  </script>
+</body>
+</html>

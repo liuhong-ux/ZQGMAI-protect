@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI预警中心 - 羌藏耕牧智护</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="../css/custom.css">
+</head>
+<body>
+  <div id="global-toast" class="toast"></div>
+
+  <script src="../js/mock-data.js"></script>
+  <script src="../js/components.js"></script>
+  <script>
+    const MD = window.MockData;
+  </script>
+
+  <div class="gov-container">
+    <!-- ====== 顶部导航栏 ====== -->
+    <header class="fixed top-0 left-0 right-0 bg-white border-b border-gray-100 z-50" style="height:56px">
+      <div class="flex items-center justify-between h-full px-6">
+        <div class="flex items-center gap-3">
+          <button id="sidebar-toggle" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition text-gray-500">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          <a href="dashboard.html" class="flex items-center gap-2 text-primary hover:opacity-80 transition">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M14 4L4 12l3 2v8h6v-6h2v6h6v-8l3-2L14 4z" fill="#1A6B42"/>
+              <circle cx="20" cy="8" r="3" fill="#1A6B42" opacity="0.3"/>
+              <path d="M20 5.5v5M17.5 8h5" stroke="#1A6B42" stroke-width="1" stroke-linecap="round"/>
+            </svg>
+            <span class="font-semibold text-gray-800 hidden sm:inline">羌藏耕牧智护</span>
+          </a>
+          <span class="text-gray-300 hidden sm:inline">|</span>
+          <nav class="text-sm text-gray-500 hidden sm:block">
+            <a href="dashboard.html" class="hover:text-primary transition">治理端</a>
+            <span class="mx-1">›</span>
+            <span class="text-gray-800 font-medium" data-zh="AI预警中心" data-bo="AI ཉེན་བརྡ་ལྟེ་གནས">AI预警中心</span>
+          </nav>
+        </div>
+        <div class="flex items-center gap-4">
+          <button id="lang-switch" class="lang-switch">藏文</button>
+          <span id="live-clock" class="text-sm text-gray-500 tabular-nums hidden sm:inline"></span>
+          <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center">
+            <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div style="height:56px"></div>
+
+    <!-- ====== 主体布局 ====== -->
+    <div class="gov-layout">
+      <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+      <!-- 左侧菜单 -->
+      <aside id="gov-sidebar" class="gov-sidebar">
+        <nav class="py-4 px-3 space-y-1">
+          <a href="dashboard.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+            <i data-lucide="layout-dashboard" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="监控总览" data-bo="ལྟ་སྐོར་མཐོ་རྟགས">监控总览</span>
+          </a>
+          <a href="alerts.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition gov-nav-item-active">
+            <i data-lucide="bell-ring" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="AI预警中心" data-bo="AI ཉེན་བརྡ་ལྟེ་གནས">AI预警中心</span>
+          </a>
+          <a href="analytics.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+            <i data-lucide="bar-chart-3" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="辖区数据分析" data-bo="ས་ཁུལ་གཞི་གྲངས་དབྱེ་ཞིབ">辖区数据分析</span>
+          </a>
+          <a href="farmers.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+            <i data-lucide="users" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="农户管理" data-bo="ཞིང་པ་དོ་དམ">农户管理</span>
+          </a>
+        </nav>
+        <div class="mt-auto px-3 py-4 border-t border-gray-100">
+          <div class="flex items-center gap-3 px-3 py-2">
+            <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center flex-shrink-0">
+              <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-gray-800 truncate">基层治理员</p>
+              <p class="text-xs text-gray-400 truncate">admin@abazhou.gov</p>
+            </div>
+          </div>
+          <a href="../login.html" class="flex items-center gap-2 px-3 py-2 mt-1 text-xs text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            <span>退出登录</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- 右侧主内容 -->
+      <main class="gov-main">
+        <div class="max-w-[1600px] mx-auto">
+
+          <!-- ====== 页面标题 ====== -->
+          <div class="flex items-center justify-between mb-4">
+            <h1 class="text-lg font-bold text-gray-800" data-zh="AI预警中心" data-bo="AI ཉེན་བརྡ་ལྟེ་གནས">AI预警中心</h1>
+            <a href="dashboard.html" class="text-xs text-primary hover:underline flex items-center gap-1">
+              <i data-lucide="arrow-left" class="w-3 h-3"></i>
+              <span data-zh="返回总览" data-bo="ལྟ་སྐོར་ལ་འཛུལ་བ">返回总览</span>
+            </a>
+          </div>
+
+          <!-- ====== 统计概览卡片 ====== -->
+          <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="text-xs text-gray-400 mb-1" data-zh="今日新增预警" data-bo="དེ་རིང་གསར་པའི་ཉེན་བརྡ">今日新增预警</div>
+              <div class="text-2xl font-bold text-red-500">23 <span class="text-sm font-normal text-gray-400">条</span></div>
+              <div class="text-xs text-red-400 mt-1">↑ 较昨日增加3条</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="text-xs text-gray-400 mb-1" data-zh="其中设备故障" data-bo="ལས་འཕྲུལ་གྱི་དཀྲུགས་བརྡ">其中设备故障</div>
+              <div class="text-2xl font-bold text-accent-orange">5 <span class="text-sm font-normal text-gray-400">条</span></div>
+              <span class="text-xs bg-orange-50 text-orange-700 px-1.5 py-0.5 rounded-full">待处理</span>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="text-xs text-gray-400 mb-1" data-zh="待处理预警" data-bo="ལེགས་བཅོས་མ་བྱས་པའི་ཉེན་བརྡ">待处理预警</div>
+              <div class="text-2xl font-bold text-gray-800">15 <span class="text-sm font-normal text-gray-400">条</span></div>
+              <div class="text-xs text-gray-400 mt-1">处理中 5 / 待处理 10</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="text-xs text-gray-400 mb-1" data-zh="本月已处理" data-bo="ཟླ་འདིར་བཅོས་ཚར">本月已处理</div>
+              <div class="text-2xl font-bold text-green-600">156 <span class="text-sm font-normal text-gray-400">条</span></div>
+              <div class="text-xs text-green-500 mt-1">↑ 上月同期 +12.3%</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="text-xs text-gray-400 mb-1" data-zh="处理率" data-bo="ལེགས་བཅོས་ཚད">处理率</div>
+              <div class="text-2xl font-bold text-gray-800">91.2<span class="text-sm font-normal text-gray-400">%</span></div>
+              <div class="progress-bar mt-2">
+                <div class="progress-bar-fill bg-green-500" style="width:91.2%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====== 筛选栏 ====== -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+            <div class="flex flex-wrap items-center gap-3">
+              <!-- 预警等级筛选标签 -->
+              <div class="flex items-center gap-1.5" id="level-filters">
+                <button class="level-filter-btn active text-xs px-3 py-1.5 rounded-full font-medium bg-primary text-white transition" data-level="all">全部</button>
+                <button class="level-filter-btn text-xs px-3 py-1.5 rounded-full font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition" data-level="red">红色-紧急</button>
+                <button class="level-filter-btn text-xs px-3 py-1.5 rounded-full font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition" data-level="orange">橙色-重要</button>
+                <button class="level-filter-btn text-xs px-3 py-1.5 rounded-full font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition" data-level="yellow">黄色-关注</button>
+              </div>
+              <span class="text-gray-300 hidden lg:inline">|</span>
+              <!-- 类型筛选 -->
+              <select id="type-filter" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-600 focus:outline-none focus:border-primary">
+                <option value="all">全部类型</option>
+                <option value="device">设备故障</option>
+                <option value="disease">疾病风险</option>
+                <option value="ecology">生态异常</option>
+                <option value="weather">气象灾害</option>
+                <option value="violation">违规行为</option>
+              </select>
+              <!-- 时间范围 -->
+              <select id="time-filter" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-600 focus:outline-none focus:border-primary">
+                <option value="today">今日</option>
+                <option value="week" selected>近7天</option>
+                <option value="month">近30天</option>
+              </select>
+              <!-- 搜索框 -->
+              <div class="flex items-center gap-1 ml-auto">
+                <input id="search-input" type="text" placeholder="搜索预警内容..." class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-gray-600 focus:outline-none focus:border-primary w-40">
+                <button onclick="filterAlerts()" class="text-xs bg-primary text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition font-medium">
+                  <i data-lucide="search" class="w-3.5 h-3.5 inline"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====== 预警列表（表格） ====== -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="bg-gray-50">
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500" data-zh="预警等级" data-bo="ཉེན་བརྡ་རིམ་པ">预警等级</th>
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500" data-zh="预警类型" data-bo="ཉེན་བརྡ་རིགས">预警类型</th>
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500" data-zh="预警内容" data-bo="ཉེན་བརྡ་ནང་དོན">预警内容</th>
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500" data-zh="区域" data-bo="ས་ཁུལ">区域</th>
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500" data-zh="触发时间" data-bo="འཕྲོགས་དུས">触发时间</th>
+                    <th class="text-left px-4 py-3 text-xs font-medium text-gray-500" data-zh="状态" data-bo="གནས་ཚུལ">状态</th>
+                    <th class="text-center px-4 py-3 text-xs font-medium text-gray-500" data-zh="操作" data-bo="བྱ་སྤྱོད">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="alert-table-body">
+                  <!-- 由JS动态渲染 -->
+                </tbody>
+              </table>
+            </div>
+            <!-- 空状态 -->
+            <div id="empty-alert-state" class="empty-state hidden">
+              <i data-lucide="bell-off" class="w-12 h-12 text-gray-300 mb-3"></i>
+              <p class="text-sm font-medium text-gray-500" data-zh="暂无预警信息" data-bo="ཉེན་བརྡ་མེད">暂无预警信息</p>
+              <p class="text-xs text-gray-400 mt-1" data-zh="当前所选条件下没有预警记录" data-bo="ད་ལྟའི་འདེམས་ཁོངས་ཀྱི་ཉེན་བརྡ་མེད">当前所选条件下没有预警记录</p>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ====== 预警详情模态框 ====== -->
+  <div id="alert-modal" class="modal-overlay">
+    <div class="bg-white rounded-xl shadow-lg max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto">
+      <!-- 头部 -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+        <div class="flex items-center gap-2">
+          <h2 id="modal-title" class="text-base font-semibold text-gray-800"></h2>
+          <span id="modal-level-tag" class="text-xs px-2 py-0.5 rounded-full font-medium"></span>
+        </div>
+        <button onclick="closeModal('alert-modal')" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition">
+          <i data-lucide="x" class="w-4 h-4 text-gray-400"></i>
+        </button>
+      </div>
+      <!-- 内容 -->
+      <div class="px-6 py-4 space-y-4">
+        <!-- 基本信息 -->
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div>
+            <span class="text-gray-400 text-xs" data-zh="预警类型" data-bo="ཉེན་བརྡ་རིགས">预警类型</span>
+            <p id="modal-type" class="font-medium text-gray-800"></p>
+          </div>
+          <div>
+            <span class="text-gray-400 text-xs" data-zh="触发时间" data-bo="འཕྲོགས་དུས">触发时间</span>
+            <p id="modal-time" class="font-medium text-gray-800"></p>
+          </div>
+          <div>
+            <span class="text-gray-400 text-xs" data-zh="区域位置" data-bo="ས་ཁུལ་གནས་སྟངས">区域位置</span>
+            <p id="modal-location" class="font-medium text-gray-800"></p>
+          </div>
+          <div>
+            <span class="text-gray-400 text-xs" data-zh="当前状态" data-bo="ད་ལྟའི་གནས་ཚུལ">当前状态</span>
+            <p id="modal-status" class="font-medium"></p>
+          </div>
+        </div>
+        <!-- 详细描述 -->
+        <div>
+          <h3 class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide" data-zh="详细描述" data-bo="ཞིབ་བཤེར་ངོ་སྤྲོད">详细描述</h3>
+          <div id="modal-content" class="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-lg p-3"></div>
+        </div>
+        <!-- 设备故障额外信息 -->
+        <div id="modal-device-info" class="hidden">
+          <h3 class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide" data-zh="设备信息" data-bo="སྒྲིག་ཆས་ཀྱི་གནས་ཚུལ">设备信息</h3>
+          <div class="bg-blue-50 rounded-lg p-3 text-sm space-y-1">
+            <p class="text-gray-700"><span class="text-gray-500">设备编号：</span><span id="modal-device-id" class="font-medium"></span></p>
+            <p class="text-gray-700"><span class="text-gray-500">设备类型：</span><span id="modal-device-type" class="font-medium"></span></p>
+            <p class="text-gray-700"><span class="text-gray-500">最后在线：</span><span id="modal-device-last" class="font-medium"></span></p>
+            <p class="text-gray-700"><span class="text-gray-500">故障判断：</span><span id="modal-device-cause" class="font-medium"></span></p>
+            <p class="text-gray-700"><span class="text-gray-500">建议处理：</span><span id="modal-device-action" class="font-medium text-accent-orange"></span></p>
+          </div>
+        </div>
+        <!-- AI建议 -->
+        <div>
+          <h3 class="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
+            <i data-lucide="sparkles" class="w-3 h-3 inline text-accent-orange"></i>
+            <span data-zh="AI智能研判建议" data-bo="AI ཀྱི་དཔྱད་ཞིབ་བསམ་འཆར">AI智能研判建议</span>
+          </h3>
+          <ul id="modal-ai-suggestions" class="space-y-1.5 text-sm text-gray-700 bg-secondary-light rounded-lg p-3 list-disc list-inside"></ul>
+        </div>
+        <!-- 操作按钮 -->
+        <div class="flex items-center gap-3 pt-2 border-t border-gray-100">
+          <button onclick="handleAlertAction('处理')" class="bg-primary text-white text-sm px-5 py-2 rounded-lg hover:opacity-90 transition font-medium">
+            <i data-lucide="check-circle" class="w-4 h-4 inline mr-1"></i>
+            <span data-zh="标记已处理" data-bo="བཅོས་ཚར་བར་བཀོད་པ">标记已处理</span>
+          </button>
+          <button onclick="handleAlertAction('转派')" class="bg-white text-primary border border-primary text-sm px-5 py-2 rounded-lg hover:bg-primary-light transition font-medium">
+            <i data-lucide="send" class="w-4 h-4 inline mr-1"></i>
+            <span data-zh="转派" data-bo="གཞན་ལ་གཏོང་བ">转派</span>
+          </button>
+          <button onclick="handleAlertAction('忽略')" class="bg-white text-gray-500 border border-gray-200 text-sm px-5 py-2 rounded-lg hover:bg-gray-50 transition font-medium ml-auto">
+            <i data-lucide="x-circle" class="w-4 h-4 inline mr-1"></i>
+            <span data-zh="忽略" data-bo="དོ་སྣང་མེད་པར་བཞག">忽略</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== 初始化 ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      initLanguageSwitch();
+      initClock();
+      initGovSidebar();
+      if (window.lucide) lucide.createIcons();
+      setFavicon();
+
+      renderAlertTable();
+
+      // 等级筛选点击
+      document.querySelectorAll('.level-filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.level-filter-btn').forEach(b => {
+            b.className = 'level-filter-btn text-xs px-3 py-1.5 rounded-full font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition';
+          });
+          this.className = 'level-filter-btn active text-xs px-3 py-1.5 rounded-full font-medium bg-primary text-white transition';
+          filterAlerts();
+        });
+      });
+
+      // 类型/时间/搜索变化
+      document.getElementById('type-filter').addEventListener('change', filterAlerts);
+      document.getElementById('time-filter').addEventListener('change', filterAlerts);
+      document.getElementById('search-input').addEventListener('input', filterAlerts);
+    });
+
+    let currentAlerts = [];
+
+    function renderAlertTable(alerts) {
+      const data = alerts || MD.alerts;
+      currentAlerts = data;
+      const tbody = document.getElementById('alert-table-body');
+      const emptyState = document.getElementById('empty-alert-state');
+
+      if (data.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      const levelMap = {
+        red: { cn: '紧急', color: 'bg-red-500' },
+        orange: { cn: '重要', color: 'bg-orange-400' },
+        yellow: { cn: '关注', color: 'bg-yellow-400' }
+      };
+      const statusMap = {
+        pending: { cn: '待处理', color: 'bg-red-50 text-red-700' },
+        processing: { cn: '处理中', color: 'bg-orange-50 text-orange-700' },
+        resolved: { cn: '已处理', color: 'bg-green-50 text-green-700' }
+      };
+      const typeIcons = {
+        device: 'wifi-off', disease: 'activity', ecology: 'leaf',
+        weather: 'cloud-lightning', violation: 'alert-triangle'
+      };
+      const typeColors = {
+        device: 'text-blue-600', disease: 'text-red-600', ecology: 'text-green-600',
+        weather: 'text-yellow-600', violation: 'text-orange-600'
+      };
+
+      tbody.innerHTML = data.map((a, idx) => `
+        <tr class="border-b border-gray-100 hover:bg-gray-50 transition ${a.level === 'red' ? 'animate-pulse-warning' : ''}">
+          <td class="px-4 py-3">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full ${levelMap[a.level].color}"></span>
+              <span class="text-xs font-medium ${a.level === 'red' ? 'text-red-600' : a.level === 'orange' ? 'text-orange-500' : 'text-yellow-600'}">${levelMap[a.level].cn}</span>
+            </div>
+          </td>
+          <td class="px-4 py-3">
+            <div class="flex items-center gap-1.5">
+              <i data-lucide="${typeIcons[a.type] || 'bell'}" class="w-3.5 h-3.5 ${typeColors[a.type] || 'text-gray-400'}"></i>
+              <span class="text-xs text-gray-700">${a.typeName}</span>
+            </div>
+          </td>
+          <td class="px-4 py-3">
+            <p class="text-sm text-gray-700 max-w-xs truncate">${a.title}</p>
+          </td>
+          <td class="px-4 py-3 text-xs text-gray-500">${a.county}</td>
+          <td class="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">${a.time}</td>
+          <td class="px-4 py-3">
+            <span class="text-xs px-2 py-0.5 rounded-full font-medium ${statusMap[a.status] ? statusMap[a.status].color : 'bg-gray-100 text-gray-500'}">${statusMap[a.status] ? statusMap[a.status].cn : a.status}</span>
+          </td>
+          <td class="px-4 py-3">
+            <div class="flex items-center justify-center gap-2">
+              <button onclick="openAlertDetail(${idx})" class="text-xs text-primary hover:text-primary-dark font-medium transition">
+                <i data-lucide="eye" class="w-3.5 h-3.5 inline mr-0.5"></i><span data-zh="查看" data-bo="ལྟ་ཞིབ">查看</span>
+              </button>
+              <button onclick="showToast('已标记为处理中')" class="text-xs text-gray-400 hover:text-gray-600 transition" data-zh="处理" data-bo="ལེགས་བཅོས">处理</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function filterAlerts() {
+      let data = [...MD.alerts];
+
+      // 等级筛选
+      const activeLevel = document.querySelector('.level-filter-btn.active');
+      const level = activeLevel ? activeLevel.dataset.level : 'all';
+      if (level !== 'all') data = data.filter(a => a.level === level);
+
+      // 类型筛选
+      const type = document.getElementById('type-filter').value;
+      if (type !== 'all') data = data.filter(a => a.type === type);
+
+      // 时间筛选
+      const time = document.getElementById('time-filter').value;
+      const now = new Date();
+      if (time === 'today') {
+        data = data.filter(a => {
+          const t = new Date(a.time);
+          return t.toDateString() === now.toDateString();
+        });
+      } else if (time === 'week') {
+        const weekAgo = new Date(now.getTime() - 7 * 86400000);
+        data = data.filter(a => new Date(a.time) >= weekAgo);
+      }
+
+      // 搜索
+      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      if (query) {
+        data = data.filter(a =>
+          a.title.toLowerCase().includes(query) ||
+          a.content.toLowerCase().includes(query) ||
+          a.county.includes(query) ||
+          a.typeName.includes(query)
+        );
+      }
+
+      renderAlertTable(data);
+    }
+
+    function openAlertDetail(idx) {
+      const a = currentAlerts[idx];
+      if (!a) return;
+
+      const levelMap = { red: '紧急', orange: '重要', yellow: '关注' };
+      const levelColors = { red: 'bg-red-50 text-red-700', orange: 'bg-orange-50 text-orange-700', yellow: 'bg-yellow-50 text-yellow-700' };
+      const statusMap = { pending: '待处理', processing: '处理中', resolved: '已处理' };
+      const statusColors = { pending: 'text-red-600', processing: 'text-orange-500', resolved: 'text-green-600' };
+
+      document.getElementById('modal-title').textContent = a.title;
+      document.getElementById('modal-level-tag').textContent = levelMap[a.level];
+      document.getElementById('modal-level-tag').className = `text-xs px-2 py-0.5 rounded-full font-medium ${levelColors[a.level]}`;
+      document.getElementById('modal-type').textContent = a.typeName;
+      document.getElementById('modal-time').textContent = a.time;
+      document.getElementById('modal-location').textContent = a.county + (a.location ? ' · ' + a.location : '');
+      document.getElementById('modal-status').textContent = statusMap[a.status] || a.status;
+      document.getElementById('modal-status').className = `font-medium ${statusColors[a.status] || 'text-gray-500'}`;
+      document.getElementById('modal-content').textContent = a.content;
+
+      // AI建议
+      const aiList = document.getElementById('modal-ai-suggestions');
+      const suggestions = a.aiSuggestion || [];
+      if (suggestions.length > 0) {
+        aiList.innerHTML = suggestions.map(s => `<li class="text-sm text-gray-700">${s}</li>`).join('');
+      } else {
+        aiList.innerHTML = '<li class="text-sm text-gray-400">暂无AI研判建议</li>';
+      }
+
+      // 设备故障额外信息
+      const deviceInfo = document.getElementById('modal-device-info');
+      if (a.type === 'device' && a.deviceInfo) {
+        deviceInfo.classList.remove('hidden');
+        document.getElementById('modal-device-id').textContent = a.deviceInfo.deviceId || '—';
+        document.getElementById('modal-device-type').textContent = a.deviceInfo.deviceType || '—';
+        document.getElementById('modal-device-last').textContent = a.deviceInfo.lastOnline || '—';
+        document.getElementById('modal-device-cause').textContent = a.deviceInfo.probableCause || '—';
+        document.getElementById('modal-device-action').textContent = a.deviceInfo.suggestedAction || '—';
+      } else {
+        deviceInfo.classList.add('hidden');
+      }
+
+      openModal('alert-modal');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function handleAlertAction(action) {
+      closeModal('alert-modal');
+      showToast(`已${action}`);
+    }
+
+    function getTimeAgo(timeStr) {
+      const now = new Date();
+      const t = new Date(timeStr);
+      const diff = Math.floor((now - t) / 60000);
+      if (diff < 1) return '刚刚';
+      if (diff < 60) return diff + '分钟前';
+      const hours = Math.floor(diff / 60);
+      if (hours < 24) return hours + '小时前';
+      return Math.floor(hours / 24) + '天前';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 - 羌藏耕牧智护</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body class="min-h-screen flex items-center justify-center" style="background:#F5F7FA">
+
+  <!-- 登录卡片 -->
+  <div class="w-full max-w-[420px] mx-4">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 relative">
+      <!-- 右上角双语切换 -->
+      <div class="absolute top-4 right-4">
+        <button id="lang-switch" class="lang-switch">藏文</button>
+      </div>
+
+      <!-- Logo + 标题 -->
+      <div class="text-center mb-8">
+        <div class="flex justify-center mb-4">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <rect width="48" height="48" rx="12" fill="#1A6B42"/>
+            <path d="M24 10L8 24l4.5 3v10.5h23V27l4.5-3L24 10z" fill="white" opacity="0.9"/>
+            <circle cx="36" cy="13" r="5" fill="white" opacity="0.2"/>
+            <path d="M36 9v8M32 13h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h1 class="text-xl font-bold text-gray-900 mb-1">羌藏耕牧智护</h1>
+        <p class="text-sm text-gray-400" data-zh="AI赋能阿坝州生态种养与乡村经营" data-bo="AIགོ་རྒྱུ་མར་རྩེ་མོའི་ཞིང་ལས་དང་གྲོང་གསེབ་ལས་གཏོད་ལ་ཤུགས་སྣོན་བྱེད།">AI赋能阿坝州生态种养与乡村经营</p>
+      </div>
+
+      <!-- 角色选择 -->
+      <div class="space-y-4">
+        <!-- 基层治理端 -->
+        <a href="governance/dashboard.html" class="block group">
+          <div class="border-2 border-gray-200 rounded-xl p-5 hover:border-primary hover:bg-primary-light/30 transition-all duration-200">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-xl bg-primary-light flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-white transition">
+                <i data-lucide="building-2" class="w-6 h-6 text-primary group-hover:text-white transition"></i>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800 group-hover:text-primary transition" data-zh="基层治理端" data-bo="གོང་རིམ་བདེ་འཛིང་ཕྱོགས།">基层治理端</h3>
+                <p class="text-xs text-gray-400 mt-0.5" data-zh="生态监控、预警管理、数据分析、农户管理" data-bo="སྒྱུ་ཁམས་ལྟ་སྐོར། ཉེན་ཟླ་དོ་དམ། གཞི་རྩ་ཞིབ་བཤེར།">生态监控、预警管理、数据分析、农户管理</p>
+              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-300 group-hover:text-primary ml-auto transition"></i>
+            </div>
+          </div>
+        </a>
+
+        <!-- 乡村经营端 -->
+        <a href="farming/farm-home.html" class="block group">
+          <div class="border-2 border-gray-200 rounded-xl p-5 hover:border-secondary hover:bg-secondary-light/30 transition-all duration-200">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-xl bg-secondary-light flex items-center justify-center flex-shrink-0 group-hover:bg-secondary group-hover:text-white transition">
+                <i data-lucide="sprout" class="w-6 h-6 text-secondary group-hover:text-white transition"></i>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800 group-hover:text-secondary transition" data-zh="乡村经营端" data-bo="གྲོང་གསེབ་གྱུར་རྒྱུ་ཕྱོགས།">乡村经营端</h3>
+                <p class="text-xs text-gray-400 mt-0.5" data-zh="农场管理、AI种养、云认养、营销推广、创业服务" data-bo="ཞིང་གནས་དོ་དམ། AIལུས་པོ། གློག་སྐྱེས།">农场管理、AI种养、云认养、营销推广、创业服务</p>
+              </div>
+              <i data-lucide="chevron-right" class="w-5 h-5 text-gray-300 group-hover:text-secondary ml-auto transition"></i>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- 底部提示 -->
+      <div class="text-center mt-6">
+        <p class="text-xs text-gray-400">仅供演示，无需账号密码</p>
+        <a href="index.html" class="text-xs text-primary hover:underline mt-2 inline-block">← 返回首页</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/components.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initCommon();
+    });
+  </script>
+</body>
+</html>

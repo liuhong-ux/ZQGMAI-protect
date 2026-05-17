@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.rural</groupId>
+    <artifactId>zhixianglian</artifactId>
+    <version>1.0.0</version>
+
+    <!-- 关键：打包方式为 war，IDEA 据此识别为 Web 项目 -->
+    <packaging>war</packaging>
+
+    <name>智乡联——AI乡村闲置资源盘活与产业发展赋能平台</name>
+    <description>AI赋能阿坝州生态种养与乡村经营平台 - 前端展示</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <!-- Servlet API（Tomcat 8 自带，provided 避免打包进 war） -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>zhixianglian</finalName>
+        <plugins>
+            <!-- Maven WAR 插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
+                <configuration>
+                    <!-- 指定 web.xml 位置 -->
+                    <webXml>WEB-INF/web.xml</webXml>
+                    <!-- 项目根目录即为 web 资源目录 -->
+                    <warSourceDirectory>.</warSourceDirectory>
+                    <!-- 打包时排除 IDE 和构建相关文件 -->
+                    <packagingExcludes>
+                        WEB-INF/context.xml,
+                        .idea/**,
+                        pom.xml,
+                        README-*.md
+                    </packagingExcludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

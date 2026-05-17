@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>监控总览大屏 - 羌藏耕牧智护</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="../css/custom.css">
+</head>
+<body>
+  <!-- 全局Toast -->
+  <div id="global-toast" class="toast"></div>
+
+  <script src="../js/mock-data.js"></script>
+  <script src="../js/components.js"></script>
+  <script src="../js/charts.js"></script>
+  <script>
+    const MD = window.MockData;
+  </script>
+
+  <div class="gov-container">
+    <!-- ====== 顶部导航栏 ====== -->
+    <header class="fixed top-0 left-0 right-0 bg-white border-b border-gray-100 z-50" style="height:56px">
+      <div class="flex items-center justify-between h-full px-6">
+        <div class="flex items-center gap-3">
+          <button id="sidebar-toggle" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition text-gray-500">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          <a href="dashboard.html" class="flex items-center gap-2 text-primary hover:opacity-80 transition">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M14 4L4 12l3 2v8h6v-6h2v6h6v-8l3-2L14 4z" fill="#1A6B42"/>
+              <circle cx="20" cy="8" r="3" fill="#1A6B42" opacity="0.3"/>
+              <path d="M20 5.5v5M17.5 8h5" stroke="#1A6B42" stroke-width="1" stroke-linecap="round"/>
+            </svg>
+            <span class="font-semibold text-gray-800 hidden sm:inline">羌藏耕牧智护</span>
+          </a>
+          <span class="text-gray-300 hidden sm:inline">|</span>
+          <span class="text-sm font-medium text-gray-800 hidden sm:inline" data-zh="监控总览" data-bo="ལྟ་སྐོར་མཐོ་རྟགས">监控总览</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <!-- 管辖区域选择 -->
+          <select id="county-select" class="text-xs bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-gray-600 focus:outline-none focus:border-primary hidden sm:block">
+            <option value="all">全州管辖</option>
+          </select>
+          <button id="lang-switch" class="lang-switch">藏文</button>
+          <span id="live-clock" class="text-sm text-gray-500 tabular-nums hidden sm:inline"></span>
+          <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center">
+            <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div style="height:56px"></div>
+
+    <!-- ====== 主体布局 ====== -->
+    <div class="gov-layout">
+      <!-- 侧边栏遮罩 -->
+      <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+      <!-- 左侧菜单 -->
+      <aside id="gov-sidebar" class="gov-sidebar">
+        <nav class="py-4 px-3 space-y-1">
+          <a href="dashboard.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition gov-nav-item-active">
+            <i data-lucide="layout-dashboard" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="监控总览" data-bo="ལྟ་སྐོར་མཐོ་རྟགས">监控总览</span>
+          </a>
+          <a href="alerts.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+            <i data-lucide="bell-ring" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="AI预警中心" data-bo="AI ཉེན་བརྡ་ལྟེ་གནས">AI预警中心</span>
+          </a>
+          <a href="analytics.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+            <i data-lucide="bar-chart-3" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="辖区数据分析" data-bo="ས་ཁུལ་གཞི་གྲངས་དབྱེ་ཞིབ">辖区数据分析</span>
+          </a>
+          <a href="farmers.html" class="gov-nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+            <i data-lucide="users" class="w-5 h-5 flex-shrink-0"></i>
+            <span data-zh="农户管理" data-bo="ཞིང་པ་དོ་དམ">农户管理</span>
+          </a>
+        </nav>
+        <div class="mt-auto px-3 py-4 border-t border-gray-100">
+          <div class="flex items-center gap-3 px-3 py-2">
+            <div class="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center flex-shrink-0">
+              <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-gray-800 truncate">基层治理员</p>
+              <p class="text-xs text-gray-400 truncate">admin@abazhou.gov</p>
+            </div>
+          </div>
+          <a href="../login.html" class="flex items-center gap-2 px-3 py-2 mt-1 text-xs text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+            <span>退出登录</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- 右侧主内容 -->
+      <main class="gov-main">
+        <div class="max-w-[1600px] mx-auto">
+
+          <!-- ====== 核心指标卡片行 ====== -->
+          <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+            <!-- 在线设备数 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-400 font-medium" data-zh="在线设备数" data-bo="དྲ་ཐོག་སྒྲིག་ཆས་གྲངས">在线设备数</span>
+                <span class="text-xs text-green-600 font-medium">↑ 2.1%</span>
+              </div>
+              <div class="text-2xl font-bold text-gray-800 mb-1">
+                <span class="text-primary">1,247</span><span class="text-sm text-gray-400 font-normal"> / 1,380</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-bar-fill bg-green-500" style="width:90.4%"></div>
+              </div>
+            </div>
+            <!-- 离线设备数 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-400 font-medium" data-zh="离线设备数" data-bo="དྲ་ཐོག་མེད་པའི་སྒྲིག་ཆས">离线设备数</span>
+                <span class="text-xs text-red-500 font-medium">↑ 5.6%</span>
+              </div>
+              <div class="text-2xl font-bold text-red-500 mb-1">
+                <span>133</span>
+                <span class="text-xs align-middle ml-1">⚠️</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-bar-fill bg-red-400" style="width:9.6%"></div>
+              </div>
+            </div>
+            <!-- 今日预警数 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-400 font-medium" data-zh="今日预警数" data-bo="དེ་རིང་གི་ཉེན་བརྡ་གྲངས">今日预警数</span>
+                <span class="text-xs text-red-500 font-medium">↑ 3条</span>
+              </div>
+              <div class="text-2xl font-bold text-red-500 mb-1">23</div>
+              <div class="text-xs text-gray-400">其中设备故障 <span class="text-accent-orange font-medium">5</span> 条</div>
+            </div>
+            <!-- 辖区农户数 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-400 font-medium" data-zh="辖区农户数" data-bo="ས་ཁུལ་ཞིང་པ་གྲངས">辖区农户数</span>
+                <span class="text-xs text-green-600 font-medium">↑ 0.8%</span>
+              </div>
+              <div class="text-2xl font-bold text-gray-800 mb-1">3,892 <span class="text-sm font-normal text-gray-400">户</span></div>
+              <div class="text-xs text-gray-400">正常 3,654 / 关注 198 / 预警 40</div>
+            </div>
+            <!-- 牲畜总量 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-400 font-medium">牲畜总量</span>
+                <span class="text-xs text-green-600 font-medium">↑ 0.3%</span>
+              </div>
+              <div class="text-2xl font-bold text-gray-800 mb-1">208.7 <span class="text-sm font-normal text-gray-400">万头</span></div>
+              <div class="text-xs text-gray-400">牛存栏量（与统计公报对齐）</div>
+            </div>
+          </div>
+
+          <!-- ====== 主区域：地图 + 右侧面板 ====== -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+            <!-- 左侧：阿坝州态势地图（占2/3宽度） -->
+            <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="text-sm font-semibold text-gray-800">空天地态势地图</h2>
+                <div class="flex items-center gap-4 text-xs text-gray-400">
+                  <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>卫星遥感</span>
+                  <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>无人机</span>
+                  <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-orange-400"></span>地面传感器</span>
+                  <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>摄像头</span>
+                  <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span><span class="text-purple-600 font-medium">牦牛定位</span></span>
+                </div>
+              </div>
+              <!-- SVG 阿坝州区域态势图（相对位置布局） -->
+              <div class="relative w-full" style="height:380px">
+                <svg viewBox="0 0 700 380" class="w-full h-full">
+                  <!-- 背景 -->
+                  <rect width="700" height="380" fill="#F9FAFB" rx="8"/>
+
+                  <!-- 县/市点位 - 相对位置布局 -->
+                  <!-- 北部：若尔盖、阿坝县、红原 -->
+                  <g class="county-point" data-county="若尔盖县" data-status="warning" transform="translate(140, 45)" style="cursor:pointer">
+                    <circle r="22" fill="#FDEDED" stroke="#E74C3C" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">若尔盖</text>
+                    <circle cx="-10" cy="-14" r="4" fill="#3B82F6"/>
+                    <circle cx="0" cy="-14" r="4" fill="#27AE60"/>
+                    <circle cx="10" cy="-14" r="4" fill="#F39C12"/>
+                  </g>
+                  <g class="county-point" data-county="阿坝县" data-status="normal" transform="translate(75, 55)" style="cursor:pointer">
+                    <circle r="20" fill="#E8F5EE" stroke="#1A6B42" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">阿坝县</text>
+                    <circle cx="-8" cy="-12" r="3" fill="#3B82F6"/>
+                    <circle cx="2" cy="-12" r="3" fill="#F39C12"/>
+                    <circle cx="12" cy="-12" r="3" fill="#27AE60"/>
+                  </g>
+                  <g class="county-point" data-county="红原县" data-status="attention" transform="translate(230, 70)" style="cursor:pointer">
+                    <circle r="22" fill="#FFF3E0" stroke="#F39C12" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">红原县</text>
+                    <circle cx="-10" cy="-14" r="4" fill="#27AE60"/>
+                    <circle cx="0" cy="-14" r="4" fill="#F39C12"/>
+                    <circle cx="10" cy="-14" r="4" fill="#F39C12"/>
+                    <!-- 牦牛北斗定位脉冲点 -->
+                    <circle cx="18" cy="-10" r="3" fill="#8B5CF6"/>
+                    <circle cx="18" cy="-10" r="8" fill="none" stroke="#8B5CF6" stroke-width="1.5" class="animate-pulse-beidou"/>
+                    <text x="22" y="-6" font-size="7" fill="#8B5CF6" font-weight="600">牦牛定位</text>
+                  </g>
+
+                  <!-- 中西部：壤塘、马尔康、金川 -->
+                  <g class="county-point" data-county="壤塘县" data-status="normal" transform="translate(80, 130)" style="cursor:pointer">
+                    <circle r="20" fill="#E8F5EE" stroke="#1A6B42" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">壤塘</text>
+                    <circle cx="-8" cy="-12" r="3" fill="#3B82F6"/>
+                    <circle cx="2" cy="-12" r="3" fill="#F39C12"/>
+                  </g>
+                  <g class="county-point" data-county="马尔康市" data-status="normal" transform="translate(160, 150)" style="cursor:pointer">
+                    <circle r="20" fill="#E8F5EE" stroke="#1A6B42" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">马尔康</text>
+                    <circle cx="-8" cy="-12" r="3" fill="#3B82F6"/>
+                    <circle cx="2" cy="-12" r="3" fill="#27AE60"/>
+                    <circle cx="12" cy="-12" r="3" fill="#F39C12"/>
+                  </g>
+                  <g class="county-point" data-county="金川县" data-status="attention" transform="translate(115, 195)" style="cursor:pointer">
+                    <circle r="20" fill="#FFF3E0" stroke="#F39C12" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">金川</text>
+                    <circle cx="-8" cy="-12" r="3" fill="#3B82F6"/>
+                    <circle cx="2" cy="-12" r="3" fill="#F39C12"/>
+                  </g>
+
+                  <!-- 中部：黑水、松潘 -->
+                  <g class="county-point" data-county="黑水县" data-status="normal" transform="translate(250, 160)" style="cursor:pointer">
+                    <circle r="20" fill="#E8F5EE" stroke="#1A6B42" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">黑水</text>
+                    <circle cx="-8" cy="-12" r="3" fill="#F39C12"/>
+                    <circle cx="2" cy="-12" r="3" fill="#27AE60"/>
+                  </g>
+                  <g class="county-point" data-county="松潘县" data-status="normal" transform="translate(330, 130)" style="cursor:pointer">
+                    <circle r="22" fill="#E8F5EE" stroke="#1A6B42" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">松潘</text>
+                    <circle cx="-10" cy="-14" r="4" fill="#3B82F6"/>
+                    <circle cx="0" cy="-14" r="4" fill="#27AE60"/>
+                    <circle cx="10" cy="-14" r="4" fill="#F39C12"/>
+                  </g>
+
+                  <!-- 南部：理县、茂县、汶川、小金、九寨沟 -->
+                  <g class="county-point" data-county="理县" data-status="normal" transform="translate(200, 235)" style="cursor:pointer">
+                    <circle r="18" fill="#E8F5EE" stroke="#1A6B42" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">理县</text>
+                    <circle cx="-6" cy="-10" r="3" fill="#F39C12"/>
+                  </g>
+                  <g class="county-point" data-county="茂县" data-status="warning" transform="translate(280, 230)" style="cursor:pointer">
+                    <circle r="22" fill="#FDEDED" stroke="#E74C3C" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">茂县</text>
+                    <circle cx="-10" cy="-14" r="4" fill="#27AE60"/>
+                    <circle cx="0" cy="-14" r="4" fill="#F39C12"/>
+                    <circle cx="10" cy="-14" r="4" fill="#F39C12"/>
+                    <circle cx="18" cy="0" r="3" fill="gray"/>
+                  </g>
+                  <g class="county-point" data-county="汶川县" data-status="normal" transform="translate(240, 290)" style="cursor:pointer">
+                    <circle r="20" fill="#E8F5EE" stroke="#1A6B42" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">汶川</text>
+                    <circle cx="-8" cy="-12" r="3" fill="#3B82F6"/>
+                    <circle cx="2" cy="-12" r="3" fill="#F39C12"/>
+                    <circle cx="12" cy="-12" r="3" fill="#27AE60"/>
+                  </g>
+                  <g class="county-point" data-county="小金县" data-status="warning" transform="translate(135, 275)" style="cursor:pointer">
+                    <circle r="20" fill="#FDEDED" stroke="#E74C3C" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">小金</text>
+                    <circle cx="-8" cy="-12" r="3" fill="#27AE60"/>
+                    <circle cx="2" cy="-12" r="3" fill="#F39C12"/>
+                  </g>
+                  <g class="county-point" data-county="九寨沟县" data-status="normal" transform="translate(410, 180)" style="cursor:pointer">
+                    <circle r="20" fill="#E8F5EE" stroke="#1A6B42" stroke-width="1.5"/>
+                    <text text-anchor="middle" dy="2" font-size="9" fill="#1A1A2E" font-weight="500">九寨沟</text>
+                    <circle cx="-8" cy="-12" r="3" fill="#3B82F6"/>
+                    <circle cx="2" cy="-12" r="3" fill="#F39C12"/>
+                  </g>
+
+                  <!-- 连接线（示意性的经纬线） -->
+                  <line x1="230" y1="48" x2="140" y2="55" stroke="#E5E7EB" stroke-width="0.5"/>
+                  <line x1="230" y1="70" x2="160" y2="150" stroke="#E5E7EB" stroke-width="0.5"/>
+                  <line x1="230" y1="92" x2="280" y2="230" stroke="#E5E7EB" stroke-width="0.5"/>
+
+                  <!-- 右下角设备统计 -->
+                  <g>
+                    <rect x="15" y="335" width="200" height="32" rx="6" fill="white" stroke="#E5E7EB" stroke-width="1"/>
+                    <text x="25" y="355" font-size="11" fill="#6B7280">在线 <tspan fill="#1A6B42" font-weight="bold">1,247</tspan> / 总计 <tspan font-weight="bold">1,380</tspan></text>
+                  </g>
+                </svg>
+
+                <!-- 县信息弹出卡片（动态显示） -->
+                <div id="county-info-card" class="absolute hidden bg-white rounded-xl shadow-lg border border-gray-100 p-3 z-20" style="width:220px; top:10px; right:10px">
+                  <div class="flex items-center justify-between mb-2">
+                    <h3 id="county-card-name" class="text-sm font-semibold text-gray-800"></h3>
+                    <span id="county-card-status" class="text-xs px-2 py-0.5 rounded-full"></span>
+                  </div>
+                  <div class="text-xs text-gray-500 space-y-1">
+                    <p>特色产业：<span id="county-card-feature" class="text-gray-700"></span></p>
+                    <p>设备概况：<span id="county-card-devices" class="text-gray-700"></span></p>
+                    <p>在线/离线：<span id="county-card-online" class="text-green-600"></span> / <span id="county-card-offline" class="text-red-500"></span></p>
+                    <p>预警数：<span id="county-card-alerts" class="text-red-500 font-medium"></span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 右侧面板（占1/3宽度） -->
+            <div class="space-y-4">
+              <!-- 实时预警列表 -->
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <h2 class="text-sm font-semibold text-gray-800" data-zh="实时预警" data-bo="ལྟ་ཞིབ་ཉེན་བརྡ">实时预警</h2>
+                  <a href="alerts.html" class="text-xs text-primary hover:underline" data-zh="查看全部" data-bo="ཡོངས་ལ་ལྟ་ཞིབ།">查看全部</a>
+                </div>
+                <div id="alert-list" class="space-y-3 max-h-[260px] overflow-y-auto">
+                  <!-- 由JS动态渲染 -->
+                </div>
+              </div>
+
+              <!-- 离线设备清单（折叠面板） -->
+              <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="accordion-header active flex items-center justify-between px-4 py-3 cursor-pointer border-b border-gray-100" onclick="toggleOfflinePanel(this)">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="wifi-off" class="w-4 h-4 text-red-400"></i>
+                    <span class="text-sm font-semibold text-gray-800" data-zh="离线设备清单" data-bo="དྲ་ཐོག་མེད་པའི་སྒྲིག་ཆས་ཐོ">离线设备清单</span>
+                    <span class="text-xs bg-red-50 text-red-600 px-1.5 py-0.5 rounded-full font-medium">133</span>
+                  </div>
+                  <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 chevron-icon"></i>
+                </div>
+                <div id="offline-list" class="accordion-content open">
+                  <div class="p-3 space-y-2 max-h-[200px] overflow-y-auto">
+                    <!-- 由JS动态渲染 -->
+                  </div>
+                  <div class="px-4 pb-3">
+                    <button class="text-xs text-primary hover:underline w-full text-center" onclick="showToast('已加载更多离线设备')">展开更多...</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ====== 底部三列卡片 ====== -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+            <!-- 卫星遥感监测 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <h2 class="text-sm font-semibold text-gray-800 mb-3" data-zh="卫星遥感监测" data-bo="གནམ་འཕྲེད་ངོས་ལེན་ལྟ་ཞིབ།">卫星遥感监测</h2>
+              <div class="h-[200px]">
+                <canvas id="ndviChart"></canvas>
+              </div>
+              <div class="flex items-center justify-between mt-2 text-xs text-gray-400">
+                <span>近30天 NDVI 指数趋势</span>
+                <span>预警阈值: 0.45</span>
+              </div>
+            </div>
+
+            <!-- 无人机巡航概览 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <h2 class="text-sm font-semibold text-gray-800 mb-3" data-zh="无人机巡航" data-bo="དྲ་ཐོག་མེད་པའི་སྒྲིག་ཆས">无人机巡航</h2>
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <div class="text-xs text-gray-400 mb-1" data-zh="今日巡航" data-bo="དེ་རིང་དུ་བསྐྱོད་ཐེངས">今日巡航</div>
+                  <div class="text-2xl font-bold text-gray-800" id="drone-flights">12 <span class="text-sm font-normal text-gray-400">次</span></div>
+                </div>
+                <div>
+                  <div class="text-xs text-gray-400 mb-1">覆盖面积</div>
+                  <div class="text-2xl font-bold text-gray-800" id="drone-coverage">156 <span class="text-sm font-normal text-gray-400">km²</span></div>
+                </div>
+              </div>
+              <div class="space-y-2 mb-3">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-gray-500">执行中</span>
+                  <span class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse-dot"></span>
+                    <span class="font-medium text-gray-700" id="drone-executing">3 架</span>
+                  </span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-gray-500">待命</span>
+                  <span class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-gray-300"></span>
+                    <span class="font-medium text-gray-700" id="drone-standby">2 架</span>
+                  </span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-gray-500">最近发现</span>
+                  <span class="text-accent-orange font-medium" id="drone-findings">1 项预警</span>
+                </div>
+              </div>
+              <a href="alerts.html" class="text-xs text-primary hover:underline" data-zh="查看巡航详情" data-bo="བསྐྱོད་ལམ་གྱི་གནས་ཚུལ་ལ་ལྟ་ཞིབ།">查看巡航详情</a>
+            </div>
+
+            <!-- 实时气象 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <h2 class="text-sm font-semibold text-gray-800 mb-3" data-zh="实时气象" data-bo="དུས་ཚོད་གནམ་གཤིས">实时气象</h2>
+              <div class="flex items-center gap-3 mb-4">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                  <circle cx="24" cy="24" r="10" fill="#F39C12" opacity="0.3"/>
+                  <circle cx="24" cy="24" r="6" fill="#F39C12"/>
+                  <line x1="24" y1="4" x2="24" y2="10" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="24" y1="38" x2="24" y2="44" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="4" y1="24" x2="10" y2="24" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round"/>
+                  <line x1="38" y1="24" x2="44" y2="24" stroke="#F39C12" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <div>
+                  <div class="text-3xl font-bold text-gray-800" id="weather-temp">12°C</div>
+                  <div class="text-xs text-gray-400">晴</div>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center mb-4">
+                <div class="bg-gray-50 rounded-lg p-2">
+                  <div class="text-xs text-gray-400">湿度</div>
+                  <div class="text-sm font-semibold text-gray-700" id="weather-humidity">68%</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2">
+                  <div class="text-xs text-gray-400">风速</div>
+                  <div class="text-sm font-semibold text-gray-700" id="weather-wind">3.2 m/s</div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2">
+                  <div class="text-xs text-gray-400">体感</div>
+                  <div class="text-sm font-semibold text-gray-700">10°C</div>
+                </div>
+              </div>
+              <div class="flex justify-between text-xs text-gray-500" id="weather-forecast">
+                <!-- JS渲染 -->
+              </div>
+            </div>
+          </div>
+
+          <!-- ====== 底部滚动公告栏 ====== -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="flex items-center gap-2 px-4 py-2">
+              <i data-lucide="megaphone" class="w-4 h-4 text-primary flex-shrink-0"></i>
+              <div class="overflow-hidden flex-1">
+                <span class="marquee-text text-xs text-gray-500 inline-block">
+                  系统运行正常 | 数据更新时间：<span id="update-time">2026-05-17 09:30:00</span> | 卫星过境时间：14:23 | 离线设备：133台需关注 | 阿坝州农情监测中心 · 基层治理端
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // ========== 初始化 ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      initLanguageSwitch();
+      initClock();
+      initGovSidebar();
+      if (window.lucide) lucide.createIcons();
+      setFavicon();
+
+      // 填充县选择器
+      const select = document.getElementById('county-select');
+      MD.counties.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.name;
+        select.appendChild(opt);
+      });
+
+      // ====== 渲染实时预警列表 ======
+      renderAlertList();
+
+      // ====== 渲染离线设备清单 ======
+      renderOfflineList();
+
+      // ====== 更新气象数据 ======
+      renderWeatherData();
+
+      // ====== 更新无人机数据 ======
+      renderDroneData();
+
+      // ====== 更新时间 ======
+      document.getElementById('update-time').textContent = new Date().toLocaleString('zh-CN', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false });
+
+      // ====== 县点位点击 ======
+      document.querySelectorAll('.county-point').forEach(g => {
+        g.addEventListener('click', function() {
+          const countyName = this.dataset.county;
+          const status = this.dataset.status;
+          const county = MD.counties.find(c => countyName.includes(c.name));
+          const card = document.getElementById('county-info-card');
+          document.getElementById('county-card-name').textContent = countyName;
+          document.getElementById('county-card-feature').textContent = county ? county.feature : '—';
+          // 模拟设备数据
+          const devTotal = Math.floor(Math.random() * 80 + 20);
+          const devOnline = Math.floor(devTotal * (0.8 + Math.random() * 0.15));
+          document.getElementById('county-card-devices').textContent = devTotal + ' 台';
+          document.getElementById('county-card-online').textContent = devOnline;
+          document.getElementById('county-card-offline').textContent = devTotal - devOnline;
+          const alertCount = MD.alerts.filter(a => a.county.includes(countyName.replace('县','').replace('市',''))).length;
+          document.getElementById('county-card-alerts').textContent = alertCount + ' 条';
+
+          const statusEl = document.getElementById('county-card-status');
+          if (status === 'warning') { statusEl.textContent = '预警'; statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-red-50 text-red-700'; }
+          else if (status === 'attention') { statusEl.textContent = '关注'; statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-orange-50 text-orange-700'; }
+          else { statusEl.textContent = '正常'; statusEl.className = 'text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-700'; }
+
+          card.classList.remove('hidden');
+          // 3秒后自动隐藏
+          clearTimeout(window.cardTimeout);
+          window.cardTimeout = setTimeout(() => card.classList.add('hidden'), 5000);
+        });
+      });
+
+      // ====== 初始化NDVI图表 ======
+      initNDVIChart('ndviChart');
+    });
+
+    function renderAlertList() {
+      const container = document.getElementById('alert-list');
+      const alerts = MD.alerts.slice(0, 6);
+      container.innerHTML = alerts.map(a => {
+        const levelColors = { red: 'bg-red-500', orange: 'bg-orange-400', yellow: 'bg-yellow-400' };
+        const levelTexts = { red: '紧急', orange: '重要', yellow: '关注' };
+        const dotColor = levelColors[a.level] || 'bg-yellow-400';
+        const isPulse = a.level === 'red' ? 'animate-pulse-warning' : '';
+        return `
+          <div class="flex items-start gap-2 ${isPulse}">
+            <span class="w-2 h-2 rounded-full ${dotColor} mt-1.5 flex-shrink-0"></span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-1 mb-0.5">
+                <span class="text-[10px] px-1 py-0.5 rounded-full font-medium ${a.level === 'red' ? 'bg-red-50 text-red-700' : a.level === 'orange' ? 'bg-orange-50 text-orange-700' : 'bg-yellow-50 text-yellow-700'}">${levelTexts[a.level]}</span>
+                <span class="text-[10px] text-gray-400">${a.county}</span>
+              </div>
+              <p class="text-xs text-gray-700 line-clamp-2 leading-relaxed">${a.title}</p>
+              <p class="text-[10px] text-gray-400 mt-0.5">${getTimeAgo(a.time)}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderOfflineList() {
+      const container = document.querySelector('#offline-list .space-y-2');
+      if (!container) return;
+      MD.devices.offlineList.slice(0, 5).forEach(d => {
+        const typeIcons = { sensor: 'thermometer', camera: 'camera', router: 'wifi' };
+        const icon = typeIcons[d.type] || 'radio';
+        container.innerHTML += `
+          <div class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition">
+            <i data-lucide="${icon}" class="w-4 h-4 text-gray-400 flex-shrink-0"></i>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-gray-700 truncate">${d.name}</p>
+              <p class="text-[10px] text-gray-400">${d.county} · 离线${d.duration}</p>
+            </div>
+            <button class="text-[10px] text-primary border border-primary rounded px-2 py-0.5 hover:bg-primary-light transition whitespace-nowrap" onclick="showToast('维修通知已发送')">发送通知</button>
+          </div>
+        `;
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderWeatherData() {
+      const w = MD.weather;
+      document.getElementById('weather-temp').textContent = w.current.temp + '°C';
+      document.getElementById('weather-humidity').textContent = w.current.humidity + '%';
+      document.getElementById('weather-wind').textContent = w.current.windSpeed + ' m/s';
+      const fc = document.getElementById('weather-forecast');
+      fc.innerHTML = w.forecast.map(f => `
+        <div class="text-center">
+          <div class="text-xs text-gray-600">${f.day}</div>
+          <div class="text-sm my-1">${f.desc}</div>
+          <div class="text-xs text-gray-500">${f.tempRange}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderDroneData() {
+      const d = MD.droneInfo;
+      document.getElementById('drone-flights').innerHTML = d.todayFlights + ' <span class="text-sm font-normal text-gray-400">次</span>';
+      document.getElementById('drone-coverage').innerHTML = '156 <span class="text-sm font-normal text-gray-400">km²</span>';
+      document.getElementById('drone-executing').textContent = d.executing + ' 架';
+      document.getElementById('drone-standby').textContent = d.standby + ' 架';
+      document.getElementById('drone-findings').textContent = d.findings + ' 项预警';
+    }
+
+    function toggleOfflinePanel(header) {
+      const content = header.nextElementSibling;
+      const isOpen = content.classList.contains('open');
+      if (isOpen) {
+        content.classList.remove('open');
+        header.classList.remove('active');
+      } else {
+        content.classList.add('open');
+        header.classList.add('active');
+      }
+    }
+
+    function getTimeAgo(timeStr) {
+      const now = new Date();
+      const t = new Date(timeStr);
+      const diff = Math.floor((now - t) / 60000);
+      if (diff < 1) return '刚刚';
+      if (diff < 60) return diff + '分钟前';
+      const hours = Math.floor(diff / 60);
+      if (hours < 24) return hours + '小时前';
+      return Math.floor(hours / 24) + '天前';
+    }
+  </script>
+</body>
+</html>

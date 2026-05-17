@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>羌藏耕牧智护 - 牦牛电子户口</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <link rel="stylesheet" href="../css/custom.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* 时间线样式 */
+    .timeline-item { position: relative; padding-left: 24px; padding-bottom: 16px; }
+    .timeline-item:not(:last-child)::before {
+      content: ''; position: absolute; left: 5px; top: 12px; bottom: 0; width: 2px; background: #E5E7EB;
+    }
+    .timeline-item::after {
+      content: ''; position: absolute; left: 0; top: 6px; width: 12px; height: 12px;
+      border-radius: 50%; background: #1A6B42; border: 2px solid #E8F5EE;
+    }
+    /* 活动轨迹航点标签 */
+    .waypoint-label { font-size: 10px; fill: #6B7280; }
+  </style>
+</head>
+<body class="bg-gray-50">
+<div class="farming-container" style="background:#F5F7FA">
+
+  <!-- 顶部导航 -->
+  <div id="header"></div>
+
+  <!-- 主内容区 -->
+  <div class="p-4 space-y-4">
+
+    <!-- 牦牛基本信息卡片 -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <!-- 牦牛照片占位 -->
+      <div class="w-full h-40 relative" style="background: linear-gradient(135deg, #134E30 0%, #1A6B42 40%, #E8F5EE 100%);">
+        <!-- 牦牛SVG剪影 -->
+        <svg class="absolute bottom-4 right-4 opacity-30" width="120" height="80" viewBox="0 0 120 80" fill="white">
+          <path d="M20 65 L20 35 Q20 20 30 15 L35 12 Q40 10 42 15 L44 20 Q46 18 50 18 Q54 18 55 22 L58 35 L62 30 Q66 28 68 30 L70 35 L72 32 Q75 30 78 32 L80 40 L85 38 Q88 36 90 38 L92 45 Q95 48 95 55 L95 65 L20 65Z" fill="white" opacity="0.8"/>
+          <circle cx="38" cy="18" r="3" fill="white"/>
+          <path d="M25 65 L25 70 M30 65 L30 72 M35 65 L35 70 M40 65 L40 72 M45 65 L45 70 M50 65 L50 72 M55 65 L55 70 M60 65 L60 72 M65 65 L65 70 M70 65 L70 72 M75 65 L75 70 M80 65 L80 72 M85 65 L85 70 M90 65 L90 72" stroke="white" stroke-width="1.5" opacity="0.5"/>
+        </svg>
+        <!-- 编号标签 -->
+        <div class="absolute top-3 left-3 bg-white/90 backdrop-blur rounded-lg px-3 py-1 text-sm font-medium text-primary">MW-2024-0517</div>
+      </div>
+      <div class="p-4">
+        <!-- 品种名 -->
+        <div class="flex items-center gap-2 mb-3">
+          <h2 class="text-lg font-semibold text-gray-800" data-zh="麦洼牦牛" data-bo="རྨ་བ་མུ་མཐོང">麦洼牦牛</h2>
+          <span class="text-xs bg-secondary-light text-secondary px-2 py-0.5 rounded-full" data-zh="国家地理标志" data-bo="རྒྱལ་ཁབ་ཀྱི་གནས་གཏམ་ཚོད">国家地理标志</span>
+        </div>
+        <!-- 基本属性 -->
+        <div class="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600 mb-3">
+          <span><span class="text-gray-400" data-zh="性别" data-bo="ཕྲུག་བཞིན">性别</span>：<span data-zh="母" data-bo="མ">母</span></span>
+          <span><span class="text-gray-400" data-zh="年龄" data-bo="དགོང་ལོ">年龄</span>：3<span data-zh="岁" data-bo="ལོ">岁</span></span>
+          <span><span class="text-gray-400" data-zh="毛色" data-bo="སྐྲ་མདངས།">毛色</span>：<span data-zh="黑色" data-bo="ནག་པོ">黑色</span></span>
+          <span><span class="text-gray-400" data-zh="体重" data-bo="ལྕེ་ཚད།">体重</span>：约280kg</span>
+        </div>
+        <!-- 健康状态 -->
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-sm text-gray-500" data-zh="健康状态" data-bo="བདེ་བཅོས།">健康状态</span>：
+          <span class="inline-flex items-center gap-1 text-xs font-medium bg-green-50 text-green-700 px-2 py-0.5 rounded-full">
+            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+            <span data-zh="健康" data-bo="བདེ་བཅོས།">健康</span>
+          </span>
+        </div>
+        <!-- 设备编号 -->
+        <div class="space-y-1.5 text-xs text-gray-500">
+          <div class="flex items-center gap-2">
+            <i data-lucide="tag" class="w-3.5 h-3.5 text-gray-400"></i>
+            <span data-zh="电子耳标号" data-bo="གློག་རྫས་རྐུབ་རྟགས།">电子耳标号</span>：<span class="font-mono text-gray-700">ET-51-2024-00382</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i data-lucide="radio" class="w-3.5 h-3.5 text-gray-400"></i>
+            <span data-zh="北斗定位项圈号" data-bo="པེ་ཏོུ་དབྱིངས་ཐིག་མདུན་ཐིག་ཨང་གྲངས།">北斗定位项圈号</span>：<span class="font-mono text-gray-700">BD-HY-08156</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数据标签行（横向滚动） -->
+    <div class="scroll-x">
+      <div class="flex gap-2 pb-1" id="yak-tags"></div>
+    </div>
+
+    <!-- 折叠组容器 -->
+    <div id="yak-accordion" class="space-y-3">
+
+      <!-- 折叠组1：基本信息与健康档案 -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="accordion-header flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-50 transition">
+          <div class="flex items-center gap-2">
+            <i data-lucide="file-text" class="w-4 h-4 text-primary"></i>
+            <span class="font-medium text-gray-800 text-sm" data-zh="基本信息与健康档案" data-bo="གཞི་རྟགས་དང་བདེ་བཅོས་ཡིག་ཚོམ།">基本信息与健康档案</span>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 chevron-icon"></i>
+        </div>
+        <div class="accordion-content">
+          <div class="px-4 pb-4 space-y-4">
+            <!-- 健康档案时间线 -->
+            <div>
+              <h3 class="text-sm font-medium text-gray-700 mb-3" data-zh="健康档案" data-bo="བདེ་བཅོས་ཡིག་ཚོམ།">健康档案</h3>
+              <div id="health-records"></div>
+            </div>
+            <!-- 系谱信息 -->
+            <div class="bg-gray-50 rounded-lg p-3">
+              <h3 class="text-sm font-medium text-gray-700 mb-3" data-zh="系谱信息" data-bo="རིམ་པའི་གནས་ཚུལ།">系谱信息</h3>
+              <div id="pedigree-info" class="grid grid-cols-2 gap-3 text-sm"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 折叠组2：北斗定位与活动轨迹 -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="accordion-header flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-50 transition">
+          <div class="flex items-center gap-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-primary"></i>
+            <span class="font-medium text-gray-800 text-sm" data-zh="北斗定位与活动轨迹" data-bo="པེ་ཏོུ་དབྱིངས་ཐིག་དང་བྱུང་རྩེད་ལམ་བཤུ།">北斗定位与活动轨迹</span>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 chevron-icon"></i>
+        </div>
+        <div class="accordion-content">
+          <div class="px-4 pb-4 space-y-4">
+            <!-- 实时位置卡片 -->
+            <div class="bg-blue-50 rounded-lg p-3 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-blue-800" data-zh="实时位置" data-bo="དུས་ཐོག་གནས་ཡུལ།">实时位置</span>
+                <span class="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                  <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse-dot"></span>
+                  <span data-zh="在线" data-bo="དྲན་ཡོད།">在线</span>
+                </span>
+              </div>
+              <div id="location-info" class="text-xs text-blue-700 space-y-1.5"></div>
+            </div>
+
+            <!-- 活动轨迹SVG地图 -->
+            <div>
+              <h3 class="text-sm font-medium text-gray-700 mb-2" data-zh="活动轨迹" data-bo="བྱུང་རྩེད་ལམ་བཤུ།">活动轨迹</h3>
+              <div class="rounded-lg overflow-hidden border border-gray-200">
+                <svg id="trajectory-map" viewBox="0 0 380 220" class="w-full" style="background: linear-gradient(180deg, #E8F5EE 0%, #F0FDF4 50%, #ECFDF5 100%);">
+                  <!-- 牧场边界（虚线多边形） -->
+                  <polygon points="30,20 340,15 355,80 350,180 280,200 80,205 25,170 20,60"
+                    fill="none" stroke="#1A6B42" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.5"/>
+                  <!-- 电子围栏范围（橙色虚线矩形） -->
+                  <rect x="40" y="40" width="300" height="150" rx="4"
+                    fill="none" stroke="#F39C12" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+                  <!-- 草地纹理装饰 -->
+                  <circle cx="100" cy="100" r="2" fill="#1A6B42" opacity="0.1"/>
+                  <circle cx="150" cy="60" r="1.5" fill="#1A6B42" opacity="0.1"/>
+                  <circle cx="200" cy="120" r="2" fill="#1A6B42" opacity="0.1"/>
+                  <circle cx="250" cy="80" r="1.5" fill="#1A6B42" opacity="0.1"/>
+                  <circle cx="300" cy="150" r="2" fill="#1A6B42" opacity="0.1"/>
+                  <!-- 轨迹路径（紫色虚线曲线） -->
+                  <path id="trajectory-path"
+                    d="M 64 142 C 70 120, 80 115, 91 109 C 105 100, 110 90, 118 87 C 135 82, 140 85, 150 90 C 165 100, 170 110, 164 128 C 155 155, 120 160, 110 164 C 100 168, 95 130, 91 142"
+                    fill="none" stroke="#8B5CF6" stroke-width="2" stroke-dasharray="6,4" opacity="0.7"/>
+                  <!-- 航点将由JS动态渲染 -->
+                  <g id="waypoints-group"></g>
+                  <!-- 移动指示点（轨迹回放用） -->
+                  <circle id="moving-dot" cx="64" cy="142" r="6" fill="#8B5CF6" opacity="0" style="transition: all 0.8s linear;"/>
+                  <!-- 图例 -->
+                  <g transform="translate(10, 10)">
+                    <rect x="0" y="0" width="8" height="8" rx="2" fill="#3B82F6"/>
+                    <text x="12" y="8" class="waypoint-label">休息</text>
+                    <rect x="48" y="0" width="8" height="8" rx="2" fill="#27AE60"/>
+                    <text x="60" y="8" class="waypoint-label">觅食</text>
+                    <rect x="96" y="0" width="8" height="8" rx="2" fill="#3B82F6"/>
+                    <text x="108" y="8" class="waypoint-label">饮水</text>
+                    <circle cx="157" cy="4" r="5" fill="#8B5CF6"/>
+                    <text x="166" y="8" class="waypoint-label">当前位置</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+
+            <!-- 活动统计 -->
+            <div class="grid grid-cols-3 gap-2">
+              <div class="bg-gray-50 rounded-lg p-3 text-center">
+                <div class="text-lg font-semibold text-gray-800">2.3</div>
+                <div class="text-xs text-gray-500" data-zh="日活动范围 km²" data-bo="ཉིན་རེའི་བྱུང་རྩེད་ཁྱབ་ཁོངས།">日活动范围 km²</div>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-3 text-center">
+                <div class="text-lg font-semibold text-gray-800">8.7</div>
+                <div class="text-xs text-gray-500" data-zh="日行走距离 km" data-bo="ཉིན་རེའི་འགྲོ་ཐག་རིང་ཚད།">日行走距离 km</div>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-3 text-center">
+                <div class="text-lg font-semibold text-green-600" data-zh="正常" data-bo="ལྟོས་རྒྱུན།">正常</div>
+                <div class="text-xs text-gray-500" data-zh="电子围栏状态" data-bo="གློག་རྫས་བསྐྲུན་རྟགས་གནས་ཚུལ།">电子围栏状态</div>
+              </div>
+            </div>
+
+            <!-- 历史轨迹回放 -->
+            <div class="bg-gray-50 rounded-lg p-3 space-y-3">
+              <h3 class="text-sm font-medium text-gray-700" data-zh="历史轨迹回放" data-bo="ལོན་རིམ་ལམ་བཤུ་ཕྱིར་འཕྲུལ།">历史轨迹回放</h3>
+              <div class="flex items-center gap-2">
+                <input type="date" id="replay-date" value="2026-05-17" class="flex-1 text-xs border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-primary">
+                <button id="replay-btn" class="flex items-center gap-1 bg-purple-600 text-white text-xs px-4 py-1.5 rounded-lg hover:bg-purple-700 transition">
+                  <i data-lucide="play" class="w-3 h-3"></i>
+                  <span data-zh="播放轨迹" data-bo="ལམ་བཤུ་འཕྲུལ།">播放轨迹</span>
+                </button>
+              </div>
+              <!-- 时间显示 -->
+              <div class="flex items-center justify-between text-xs text-gray-500">
+                <span>06:00</span>
+                <span id="replay-time" class="font-mono text-purple-600 font-medium">06:00</span>
+                <span>18:00</span>
+              </div>
+              <!-- 速度选择 -->
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-500" data-zh="速度" data-bo="ཚད་ཚོད།">速度</span>
+                <div class="flex gap-1" id="speed-selector">
+                  <button class="speed-btn text-xs px-3 py-1 rounded-full bg-purple-600 text-white" data-speed="1">1x</button>
+                  <button class="speed-btn text-xs px-3 py-1 rounded-full bg-gray-200 text-gray-600" data-speed="2">2x</button>
+                  <button class="speed-btn text-xs px-3 py-1 rounded-full bg-gray-200 text-gray-600" data-speed="4">4x</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 折叠组3：生产记录与区块链溯源 -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="accordion-header flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-50 transition">
+          <div class="flex items-center gap-2">
+            <i data-lucide="box" class="w-4 h-4 text-primary"></i>
+            <span class="font-medium text-gray-800 text-sm" data-zh="生产记录与区块链溯源" data-bo="ཐོན་སྐྱེད་ཡིག་ཚོམ་དང་གྲངས་ཙིན་ནོར་བུའི་ཁྱབ་ཁོངས།">生产记录与区块链溯源</span>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 chevron-icon"></i>
+        </div>
+        <div class="accordion-content">
+          <div class="px-4 pb-4 space-y-4">
+            <!-- 生产记录 -->
+            <div class="grid grid-cols-3 gap-2">
+              <div class="bg-orange-50 rounded-lg p-3 text-center">
+                <div class="text-lg font-semibold text-orange-600">1<span class="text-xs" data-zh="头" data-bo="དྲུག">头</span></div>
+                <div class="text-xs text-gray-500" data-zh="累计产犊" data-bo="བསྡུ་རྩིས་འདྲེན་པ།">累计产犊</div>
+              </div>
+              <div class="bg-blue-50 rounded-lg p-3 text-center">
+                <div class="text-lg font-semibold text-blue-600">180<span class="text-xs">L</span></div>
+                <div class="text-xs text-gray-500" data-zh="月均产奶量" data-bo="ཟླ་རེའི་ཆ་སྙོམས་འདྲེན་པའི་ཚད།">月均产奶量</div>
+              </div>
+              <div class="bg-pink-50 rounded-lg p-3 text-center">
+                <div class="text-xs font-semibold text-pink-600" data-zh="妊娠期" data-bo="འགྲོགས་སྐར།">妊娠期</div>
+                <div class="text-xs text-gray-500" data-zh="预产2026-10" data-bo="2026-10ལ་འདྲེན་རྩིས།">预产2026-10</div>
+              </div>
+            </div>
+
+            <!-- 区块链溯源记录 -->
+            <div>
+              <h3 class="text-sm font-medium text-gray-700 mb-3" data-zh="区块链溯源记录" data-bo="གྲངས་ཙིན་ནོར་བུའི་ཁྱབ་ཁོངས་ཡིག་ཚོམ།">区块链溯源记录</h3>
+              <div id="blockchain-records" class="space-y-2"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../js/mock-data.js"></script>
+<script src="../js/components.js"></script>
+<script src="../js/charts.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  /* 渲染顶部导航 */
+  document.getElementById('header').innerHTML = renderSubPageHeader('牦牛电子户口', 'farm-home.html');
+  initCommon();
+
+  const data = MockData.yakProfile;
+
+  /* 渲染数据标签 */
+  const tagsHtml = data.tags.map(tag =>
+    `<span class="inline-block whitespace-nowrap bg-primary-light text-primary text-xs px-3 py-1 rounded-full">${tag}</span>`
+  ).join('');
+  document.getElementById('yak-tags').innerHTML = tagsHtml;
+
+  /* 渲染健康档案时间线 */
+  const recordsHtml = data.healthRecords.map(r =>
+    `<div class="timeline-item">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-xs text-gray-400">${r.date}</span>
+        <span class="text-xs font-medium text-primary bg-primary-light px-2 py-0.5 rounded">${r.type}</span>
+      </div>
+      <p class="text-sm text-gray-600">${r.detail}</p>
+    </div>`
+  ).join('');
+  document.getElementById('health-records').innerHTML = recordsHtml;
+
+  /* 渲染系谱信息 */
+  const p = data.pedigree;
+  document.getElementById('pedigree-info').innerHTML = `
+    <div class="space-y-1">
+      <div class="text-xs text-gray-400" data-zh="父亲" data-bo="ཕ་ལགས།">父亲</div>
+      <div class="text-sm font-medium text-gray-700">${p.father.id}</div>
+      <div class="text-xs text-gray-500">${p.father.color}${p.father.age}<span data-zh="岁" data-bo="ལོ">岁</span></div>
+    </div>
+    <div class="space-y-1">
+      <div class="text-xs text-gray-400" data-zh="母亲" data-bo="ཨ་མ།">母亲</div>
+      <div class="text-sm font-medium text-gray-700">${p.mother.id}</div>
+      <div class="text-xs text-gray-500">${p.mother.color}${p.mother.age}<span data-zh="岁" data-bo="ལོ">岁</span></div>
+    </div>
+    <div class="col-span-2">
+      <div class="text-xs text-gray-400" data-zh="同胎" data-bo="འདྲེད་ཕྲུག">同胎</div>
+      <div class="text-sm text-gray-500">${p.siblings.length ? p.siblings.map(s => s.id).join('、') : '无'}</div>
+    </div>
+  `;
+
+  /* 渲染实时位置信息 */
+  const loc = data.location;
+  document.getElementById('location-info').innerHTML = `
+    <div class="flex items-center gap-1"><i data-lucide="crosshair" class="w-3 h-3"></i> <span data-zh="坐标" data-bo="ས་གཤིས།">坐标</span>：${loc.lat} ${loc.lng}</div>
+    <div class="flex items-center gap-1"><i data-lucide="map" class="w-3 h-3"></i> <span data-zh="牧场" data-bo="འཐིka།">牧场</span>：${loc.farm}</div>
+    <div class="flex items-center gap-1"><i data-lucide="mountain" class="w-3 h-3"></i> <span data-zh="海拔" data-bo="རྩེར་མཐོ་ཚད།">海拔</span>：${loc.altitude.toLocaleString()}m | <span data-zh="精度" data-bo="བདེག་བཤིས།">精度</span>：${loc.accuracy}</div>
+    <div class="flex items-center gap-1"><i data-lucide="battery-medium" class="w-3 h-3"></i> <span data-zh="电量" data-bo="གློག་ཤུགས།">电量</span>：${loc.battery}%</div>
+  `;
+
+  /* 渲染轨迹航点 */
+  const wpGroup = document.getElementById('waypoints-group');
+  const wpColors = { rest: '#3B82F6', graze: '#27AE60', water: '#3B82F6', current: '#8B5CF6' };
+  data.trajectory.waypoints.forEach(wp => {
+    const cx = wp.x * 1.8 + 10;
+    const cy = wp.y * 2.2 + 10;
+    let wpSvg = '';
+    if (wp.type === 'current') {
+      // 当前位置：紫色脉冲圆点
+      wpSvg = `<circle cx="${cx}" cy="${cy}" r="10" fill="#8B5CF6" opacity="0.2" class="animate-pulse-beidou"/>`;
+      wpSvg += `<circle cx="${cx}" cy="${cy}" r="5" fill="#8B5CF6"/>`;
+    } else {
+      wpSvg = `<circle cx="${cx}" cy="${cy}" r="5" fill="${wpColors[wp.type]}" stroke="white" stroke-width="2"/>`;
+    }
+    wpSvg += `<text x="${cx + 8}" y="${cy + 4}" class="waypoint-label">${wp.label}</text>`;
+    wpSvg += `<text x="${cx + 8}" y="${cy + 14}" class="waypoint-label">${wp.time}</text>`;
+    wpGroup.innerHTML += wpSvg;
+  });
+
+  /* 渲染区块链记录 */
+  const bcHtml = data.blockchainRecords.map(r =>
+    `<div class="flex items-start gap-3 bg-gray-50 rounded-lg p-3">
+      <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+        <i data-lucide="link" class="w-4 h-4 text-purple-600"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="text-sm text-gray-700">${r.action}</div>
+        <div class="flex items-center gap-2 mt-1">
+          <span class="text-xs text-gray-400">${r.time}</span>
+          <span class="text-xs font-mono text-purple-500 truncate">${r.hash}</span>
+        </div>
+      </div>
+    </div>`
+  ).join('');
+  document.getElementById('blockchain-records').innerHTML = bcHtml;
+
+  /* 初始化手风琴（默认展开前两个） */
+  initAccordion('yak-accordion', -1); // 不自动展开任何组
+  // 手动展开前两个折叠组
+  document.querySelectorAll('#yak-accordion .accordion-header')[0].classList.add('active');
+  document.querySelectorAll('#yak-accordion .accordion-content')[0].classList.add('open');
+  document.querySelectorAll('#yak-accordion .accordion-header')[1].classList.add('active');
+  document.querySelectorAll('#yak-accordion .accordion-content')[1].classList.add('open');
+
+  /* 重新初始化 Lucide 图标 */
+  if (window.lucide) lucide.createIcons();
+
+  /* ========== 轨迹回放动画 ========== */
+  const waypoints = data.trajectory.waypoints;
+  let replayInterval = null;
+  let replaySpeed = 1;
+  let currentWpIndex = 0;
+  const movingDot = document.getElementById('moving-dot');
+  const replayTimeEl = document.getElementById('replay-time');
+
+  // 将时间字符串转换为分钟数
+  function timeToMinutes(t) {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  // 获取航点SVG坐标
+  function getWpCoord(wp) {
+    return { x: wp.x * 1.8 + 10, y: wp.y * 2.2 + 10 };
+  }
+
+  // 播放轨迹
+  document.getElementById('replay-btn').addEventListener('click', () => {
+    if (replayInterval) {
+      // 停止播放
+      clearInterval(replayInterval);
+      replayInterval = null;
+      movingDot.style.opacity = '0';
+      document.getElementById('replay-btn').innerHTML = '<i data-lucide="play" class="w-3 h-3"></i> 播放轨迹';
+      if (window.lucide) lucide.createIcons();
+      return;
+    }
+
+    currentWpIndex = 0;
+    const coord = getWpCoord(waypoints[0]);
+    movingDot.setAttribute('cx', coord.x);
+    movingDot.setAttribute('cy', coord.y);
+    movingDot.style.opacity = '1';
+    replayTimeEl.textContent = waypoints[0].time;
+
+    document.getElementById('replay-btn').innerHTML = '<i data-lucide="pause" class="w-3 h-3"></i> 暂停';
+    if (window.lucide) lucide.createIcons();
+
+    replayInterval = setInterval(() => {
+      currentWpIndex++;
+      if (currentWpIndex >= waypoints.length) {
+        clearInterval(replayInterval);
+        replayInterval = null;
+        movingDot.style.opacity = '0';
+        document.getElementById('replay-btn').innerHTML = '<i data-lucide="play" class="w-3 h-3"></i> 播放轨迹';
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+      const wp = waypoints[currentWpIndex];
+      const c = getWpCoord(wp);
+      movingDot.setAttribute('cx', c.x);
+      movingDot.setAttribute('cy', c.y);
+      replayTimeEl.textContent = wp.time;
+    }, 1500 / replaySpeed);
+  });
+
+  // 速度选择
+  document.getElementById('speed-selector').addEventListener('click', (e) => {
+    const btn = e.target.closest('.speed-btn');
+    if (!btn) return;
+    document.querySelectorAll('.speed-btn').forEach(b => {
+      b.className = 'speed-btn text-xs px-3 py-1 rounded-full bg-gray-200 text-gray-600';
+    });
+    btn.className = 'speed-btn text-xs px-3 py-1 rounded-full bg-purple-600 text-white';
+    replaySpeed = parseInt(btn.dataset.speed);
+    // 如果正在播放，重新启动定时器
+    if (replayInterval) {
+      clearInterval(replayInterval);
+      replayInterval = setInterval(() => {
+        currentWpIndex++;
+        if (currentWpIndex >= waypoints.length) {
+          clearInterval(replayInterval);
+          replayInterval = null;
+          movingDot.style.opacity = '0';
+          document.getElementById('replay-btn').innerHTML = '<i data-lucide="play" class="w-3 h-3"></i> 播放轨迹';
+          if (window.lucide) lucide.createIcons();
+          return;
+        }
+        const wp = waypoints[currentWpIndex];
+        const c = getWpCoord(wp);
+        movingDot.setAttribute('cx', c.x);
+        movingDot.setAttribute('cy', c.y);
+        replayTimeEl.textContent = wp.time;
+      }, 1500 / replaySpeed);
+    }
+  });
+});
+</script>
+</body>
+</html>

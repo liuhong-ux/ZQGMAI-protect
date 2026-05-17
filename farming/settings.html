@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>羌藏耕牧智护 - 系统设置</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#1A6B42', light: '#E8F5EE', dark: '#134E30' },
+            secondary: { DEFAULT: '#D4860A', light: '#FFF8EB' },
+            accent: { red: '#E74C3C', orange: '#F39C12' }
+          },
+          fontFamily: { sans: ['Noto Sans SC', '-apple-system', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- 自定义样式 -->
+  <link rel="stylesheet" href="../css/custom.css">
+  <style>
+    /* 设置页分组卡片 */
+    .settings-group { margin-bottom: 12px; }
+    .settings-group-title {
+      font-size: 12px; font-weight: 600; color: #9CA3AF;
+      padding: 0 16px; margin-bottom: 6px; margin-top: 16px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .settings-card {
+      background: white; border-radius: 12px; overflow: hidden;
+      margin: 0 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .settings-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; border-bottom: 1px solid #F3F4F6;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .settings-item:last-child { border-bottom: none; }
+    .settings-item:hover { background: #F9FAFB; }
+    .settings-item-left { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
+    .settings-item-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .settings-item-label {
+      font-size: 14px; color: #374151; font-weight: 500;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .settings-item-desc {
+      font-size: 12px; color: #9CA3AF; margin-top: 1px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .settings-item-right {
+      display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+    }
+    .settings-item-value {
+      font-size: 13px; color: #6B7280;
+    }
+
+    /* Toggle开关 */
+    .toggle-switch {
+      position: relative; width: 44px; height: 24px; flex-shrink: 0;
+      background: #D1D5DB; border-radius: 12px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-switch.active { background: #1A6B42; }
+    .toggle-switch::after {
+      content: '';
+      position: absolute; top: 2px; left: 2px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+    .toggle-switch.active::after { transform: translateX(20px); }
+
+    /* 编辑模式 */
+    .edit-field { display: none; }
+    .edit-field.show { display: block; }
+    .view-field { display: block; }
+    .view-field.hide { display: none; }
+
+    /* 编辑输入框 */
+    .edit-input {
+      width: 100%; padding: 8px 12px; border: 1px solid #D1D5DB;
+      border-radius: 8px; font-size: 14px; color: #374151;
+      outline: none; transition: border-color 0.2s;
+    }
+    .edit-input:focus { border-color: #1A6B42; box-shadow: 0 0 0 3px rgba(26,107,66,0.1); }
+
+    /* 底部内边距 */
+    .settings-bottom-pad { height: 100px; }
+  </style>
+</head>
+<body class="farming-body bg-[#F5F7FA] font-sans">
+  <div class="farming-container">
+
+    <!-- ===== 顶部导航栏 ===== -->
+    <header class="sticky top-0 z-30 bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100">
+      <a href="farm-home.html" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+        <i data-lucide="arrow-left" class="w-5 h-5 text-gray-600"></i>
+      </a>
+      <h1 class="text-base font-semibold text-gray-800 flex-1" data-zh="系统设置" data-bo="གཞི་རྟེན་བགོ་འདོད།">系统设置</h1>
+      <button onclick="logoutConfirm()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition text-gray-400 hover:text-red-500" title="退出登录">
+        <i data-lucide="log-out" class="w-4.5 h-4.5"></i>
+      </button>
+    </header>
+
+    <!-- ===== 个人资料卡片 ===== -->
+    <div class="settings-group">
+      <div class="settings-group-title" data-zh="个人资料" data-bo="གཞུང་གི་གནས་ཚུལ།">个人资料</div>
+      <div class="settings-card">
+        <!-- 头像与用户名 -->
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-dark to-primary flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+              扎
+            </div>
+            <div>
+              <div class="settings-item-label text-base">扎西</div>
+              <div class="text-xs text-gray-400">zhaxi@farm.com</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary-light text-primary" data-zh="已认证" data-bo="ངོས་ལེན་བྱས་">已认证</span>
+          </div>
+        </div>
+        <!-- 联系电话 -->
+        <div class="settings-item" onclick="toggleEdit(this, 'phone')">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-blue-50"><i data-lucide="phone" class="w-4.5 h-4.5 text-blue-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="联系电话" data-bo="ཁྱིམ་ཐོག་ཐོ།">联系电话</div>
+              <div class="view-field">
+                <span class="settings-item-desc" data-phone-display>138****5678</span>
+              </div>
+              <div class="edit-field">
+                <input type="tel" class="edit-input" data-phone-input value="138****5678" placeholder="输入手机号" maxlength="11">
+                <div class="flex gap-2 mt-2">
+                  <button onclick="event.stopPropagation();saveField(this, 'phone')" class="text-xs bg-primary text-white px-3 py-1 rounded-full hover:opacity-90" data-zh="保存" data-bo="ཉར་ཚགས།">保存</button>
+                  <button onclick="event.stopPropagation();cancelEdit(this)" class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full hover:bg-gray-200" data-zh="取消" data-bo="བཀག་སྤོང་།">取消</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <!-- 角色 -->
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-purple-50"><i data-lucide="badge-check" class="w-4.5 h-4.5 text-purple-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="角色" data-bo="ལས་འགན།">角色</div>
+              <div class="text-xs text-gray-400" data-zh="农场主 / 养殖户" data-bo="ཞིང་ལས་པ།">农场主 / 养殖户</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 农场信息卡片 ===== -->
+    <div class="settings-group">
+      <div class="settings-group-title" data-zh="农场信息" data-bo="ཞིང་གནས་གནས་ཚུལ།">农场信息</div>
+      <div class="settings-card">
+        <div class="settings-item" onclick="toggleEdit(this, 'farm-name')">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-green-50"><i data-lucide="home" class="w-4.5 h-4.5 text-green-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="农场名称" data-bo="ཞིང་གནས་མིང།">农场名称</div>
+              <div class="view-field">
+                <span class="settings-item-desc" data-farm-name-display>扎西家庭牧场</span>
+              </div>
+              <div class="edit-field">
+                <input type="text" class="edit-input" data-farm-name-input value="扎西家庭牧场" placeholder="输入农场名称">
+                <div class="flex gap-2 mt-2">
+                  <button onclick="event.stopPropagation();saveField(this, 'farm-name')" class="text-xs bg-primary text-white px-3 py-1 rounded-full hover:opacity-90" data-zh="保存" data-bo="ཉར་ཚགས།">保存</button>
+                  <button onclick="event.stopPropagation();cancelEdit(this)" class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full hover:bg-gray-200" data-zh="取消" data-bo="བཀག་སྤོང་།">取消</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-cyan-50"><i data-lucide="map-pin" class="w-4.5 h-4.5 text-cyan-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="所在位置" data-bo="ས་གནས།">所在位置</div>
+              <div class="text-xs text-gray-400" data-zh="阿坝州红原县邛溪镇 | 海拔 3,520m" data-bo="རྔ་བ་ཁུལ་རྡུང་ཡུལ་རྫོང་ཆོས་ཤད་གྲོང་རྩེ།">阿坝州红原县邛溪镇 | 海拔 3,520m</div>
+            </div>
+          </div>
+        </div>
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-orange-50"><i data-lucide="ruler" class="w-4.5 h-4.5 text-orange-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="草场面积" data-bo="རྩི་ཤུབས་ཆ་ཚད།">草场面积</div>
+              <div class="text-xs text-gray-400" data-zh="2,400 亩">2,400 亩</div>
+            </div>
+          </div>
+        </div>
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-red-50"><i data-lucide="beef" class="w-4.5 h-4.5 text-red-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="主要牲畜" data-bo="གཙོ་བོའི་ཕྲུག་གསོག">主要牲畜</div>
+              <div class="text-xs text-gray-400" data-zh="麦洼牦牛 156 头">麦洼牦牛 156 头</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 通知偏好卡片 ===== -->
+    <div class="settings-group">
+      <div class="settings-group-title" data-zh="通知偏好" data-bo="བརྡ་ཆད་བདམས་སྒྲིག">通知偏好</div>
+      <div class="settings-card">
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-red-50"><i data-lucide="bell-ring" class="w-4.5 h-4.5 text-red-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="AI预警通知" data-bo="AIཉེན་བརྡ་བརྡ་ཆད།">AI预警通知</div>
+              <div class="text-xs text-gray-400" data-zh="牲畜健康、疾病风险、设备故障等预警" data-bo="ཕྲུག་གསོག་བདེ་ཐང་། ནད་རིགས་ཉེན་ཁ།">牲畜健康、疾病风险、设备故障等预警</div>
+            </div>
+          </div>
+          <div class="toggle-switch active" onclick="this.classList.toggle('active')" data-setting="ai-alert"></div>
+        </div>
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-yellow-50"><i data-lucide="cloud-sun" class="w-4.5 h-4.5 text-yellow-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="气象预警通知" data-bo="གནམ་གཤིས་ཉེན་བརྡ།">气象预警通知</div>
+              <div class="text-xs text-gray-400" data-zh="暴雪、冰雹、干旱、霜冻等极端天气提醒" data-bo="གངས་ཆེན། སེར་བ།">暴雪、冰雹、干旱、霜冻等极端天气提醒</div>
+            </div>
+          </div>
+          <div class="toggle-switch active" onclick="this.classList.toggle('active')" data-setting="weather-alert"></div>
+        </div>
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-blue-50"><i data-lucide="refresh-cw" class="w-4.5 h-4.5 text-blue-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="系统更新通知" data-bo="གཞི་རྟེན་གསར་བཅོས།">系统更新通知</div>
+              <div class="text-xs text-gray-400" data-zh="功能更新、维护通知、新服务上线" data-bo="ནུས་པ་གསར་བསྒྲིགས།">功能更新、维护通知、新服务上线</div>
+            </div>
+          </div>
+          <div class="toggle-switch active" onclick="this.classList.toggle('active')" data-setting="system-update"></div>
+        </div>
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-purple-50"><i data-lucide="megaphone" class="w-4.5 h-4.5 text-purple-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="营销推广通知" data-bo="ཚོང་གཉེར་སྐུལ་སློང་།">营销推广通知</div>
+              <div class="text-xs text-gray-400" data-zh="认养提醒、营销活动、创业培训" data-bo="གློག་སྐྱེས་དྲན་སྐུལ།">认养提醒、营销活动、创业培训</div>
+            </div>
+          </div>
+          <div class="toggle-switch" onclick="this.classList.toggle('active')" data-setting="marketing"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 通用设置卡片 ===== -->
+    <div class="settings-group">
+      <div class="settings-group-title" data-zh="通用设置" data-bo="སྤྱི་སྒྲིག">通用设置</div>
+      <div class="settings-card">
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-indigo-50"><i data-lucide="globe" class="w-4.5 h-4.5 text-indigo-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="界面语言" data-bo="ཡིག་ཚང་སྐད།">界面语言</div>
+            </div>
+          </div>
+          <div class="settings-item-right">
+            <span class="settings-item-value" id="lang-display" data-zh="中文" data-bo="བོད་སྐད།">中文</span>
+            <button onclick="toggleLanguage()" class="text-xs bg-primary-light text-primary px-2.5 py-1 rounded-full hover:opacity-80 transition font-medium" data-zh="切换" data-bo="སྒྱུར་">切换</button>
+          </div>
+        </div>
+        <div class="settings-item" onclick="clearCache()">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-gray-100"><i data-lucide="trash-2" class="w-4.5 h-4.5 text-gray-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="清理缓存" data-bo="ཐོག་ཚོད་གཙང་བཤལ།">清理缓存</div>
+              <div class="text-xs text-gray-400" data-zh="清理本地缓存数据" data-bo="ས་གནས་ཐོག་ཚོད་གཙང་བཤལ།">清理本地缓存数据</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 账号安全卡片 ===== -->
+    <div class="settings-group">
+      <div class="settings-group-title" data-zh="账号安全" data-bo="བདེ་འཇགས་ཁ་ངོས།">账号安全</div>
+      <div class="settings-card">
+        <div class="settings-item" onclick="showToast('密码修改功能演示')">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-rose-50"><i data-lucide="lock" class="w-4.5 h-4.5 text-rose-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="修改密码" data-bo="གསང་ཚིག་བསྒྱུར།">修改密码</div>
+              <div class="text-xs text-gray-400" data-zh="定期修改密码保障账号安全" data-bo="གསང་ཚིག་རྒྱུན་དུ་བསྒྱུར་ནས་བདེ་འཇགས་བྱེད།">定期修改密码保障账号安全</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300"></i>
+        </div>
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-emerald-50"><i data-lucide="shield-check" class="w-4.5 h-4.5 text-emerald-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="登录设备" data-bo="ཐོ་འགོད་སྒྲིག་ཆས།">登录设备</div>
+              <div class="text-xs text-gray-400" data-zh="当前设备：Chrome 浏览器 (Windows)">当前设备：Chrome 浏览器 (Windows)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 关于卡片 ===== -->
+    <div class="settings-group">
+      <div class="settings-group-title" data-zh="关于" data-bo="སྐོར།">关于</div>
+      <div class="settings-card">
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-gray-100"><i data-lucide="info" class="w-4.5 h-4.5 text-gray-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="应用版本" data-bo="བེད་སྤྱོད་དུས།">应用版本</div>
+            </div>
+          </div>
+          <span class="text-xs text-gray-400">v2.0.0</span>
+        </div>
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-gray-100"><i data-lucide="users" class="w-4.5 h-4.5 text-gray-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="开发团队" data-bo="འཛུགས་སྐྱོང་ཚོགས་པ།">开发团队</div>
+            </div>
+          </div>
+          <span class="text-xs text-gray-400" data-zh="青耘羌藏智联团队" data-bo="དབྱར་སྐྱེས་ཆབ་ཚོང་ཤེས་ལྡན་ཚོགས་པ།">青耘羌藏智联团队</span>
+        </div>
+        <div class="settings-item cursor-default hover:bg-white">
+          <div class="settings-item-left">
+            <div class="settings-item-icon bg-gray-100"><i data-lucide="copyright" class="w-4.5 h-4.5 text-gray-500"></i></div>
+            <div>
+              <div class="settings-item-label" data-zh="版权所有" data-bo="བདག་དཔེ་དབང་ཚད།">版权所有</div>
+            </div>
+          </div>
+          <span class="text-xs text-gray-400">© 2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 退出登录按钮 ===== -->
+    <div class="px-4 mt-6">
+      <button onclick="logoutConfirm()" class="w-full py-3 rounded-xl border-2 border-red-100 text-red-500 font-medium hover:bg-red-50 transition text-sm flex items-center justify-center gap-2">
+        <i data-lucide="log-out" class="w-4.5 h-4.5"></i>
+        <span data-zh="退出登录" data-bo="ཐོན་པར་རྒྱུ།">退出登录</span>
+      </button>
+    </div>
+
+    <!-- 底部分隔 -->
+    <div class="settings-bottom-pad"></div>
+
+    <!-- 底部Tab栏 -->
+    <div id="tabbar"></div>
+  </div>
+
+  <!-- 退出确认模态框 -->
+  <div id="logout-modal" class="modal-overlay" onclick="if(event.target===this) closeModal('logout-modal')">
+    <div class="bg-white rounded-2xl shadow-xl mx-4 p-6 w-full max-w-sm" onclick="event.stopPropagation()">
+      <div class="text-center mb-4">
+        <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3">
+          <i data-lucide="log-out" class="w-7 h-7 text-red-500"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800" data-zh="确认退出" data-bo="ཐོན་པར་བཀག་འདོད">确认退出</h3>
+        <p class="text-sm text-gray-500 mt-1" data-zh="退出后需要重新登录才能使用" data-bo="ཐོན་པར་དང་གསར་དུ་ཐོ་འགོད་བྱེད་དགོས།">退出后需要重新登录才能使用</p>
+      </div>
+      <div class="flex gap-3">
+        <button onclick="closeModal('logout-modal')" class="flex-1 py-2.5 rounded-lg border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition text-sm">
+          <span data-zh="取消" data-bo="བཀག་སྤོང་">取消</span>
+        </button>
+        <button onclick="logoutAction()" class="flex-1 py-2.5 rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 transition text-sm">
+          <span data-zh="确定退出" data-bo="ཐོན་པར་ངོས་ལེན་">确定退出</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 公共JS -->
+  <script src="../js/mock-data.js"></script>
+  <script src="../js/components.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 渲染底部Tab栏
+      document.getElementById('tabbar').innerHTML = renderFarmingTabBar('user');
+      initCommon();
+
+      // 重新初始化lucide图标
+      if (window.lucide) lucide.createIcons();
+    });
+
+    // ========== 编辑字段切换 ==========
+    function toggleEdit(item, fieldType) {
+      const viewField = item.querySelector('.view-field');
+      const editField = item.querySelector('.edit-field');
+      if (!viewField || !editField) return;
+
+      // 关闭所有其他编辑
+      document.querySelectorAll('.edit-field.show').forEach(el => {
+        if (el !== editField) {
+          el.classList.remove('show');
+          el.closest('.settings-item').querySelector('.view-field').classList.remove('hide');
+        }
+      });
+
+      viewField.classList.add('hide');
+      editField.classList.add('show');
+    }
+
+    // ========== 保存编辑字段 ==========
+    function saveField(btn, fieldType) {
+      const item = btn.closest('.settings-item');
+      const input = item.querySelector('.edit-input');
+      const display = item.querySelector('[data-' + fieldType + '-display]');
+      const viewField = item.querySelector('.view-field');
+      const editField = item.querySelector('.edit-field');
+
+      if (input && display) {
+        display.textContent = input.value || display.textContent;
+      }
+
+      viewField.classList.remove('hide');
+      editField.classList.remove('show');
+      showToast('保存成功');
+    }
+
+    // ========== 取消编辑 ==========
+    function cancelEdit(btn) {
+      const item = btn.closest('.settings-item');
+      const viewField = item.querySelector('.view-field');
+      const editField = item.querySelector('.edit-field');
+
+      viewField.classList.remove('hide');
+      editField.classList.remove('show');
+    }
+
+    // ========== 语言切换 ==========
+    function toggleLanguage() {
+      const display = document.getElementById('lang-display');
+      if (!display) return;
+
+      const currentLang = localStorage.getItem('lang') || 'zh';
+      const newLang = currentLang === 'zh' ? 'bo' : 'zh';
+      localStorage.setItem('lang', newLang);
+
+      // 应用语言
+      document.querySelectorAll('[data-zh][data-bo]').forEach(el => {
+        el.textContent = el.getAttribute(`data-${newLang}`);
+      });
+
+      // 刷新语言显示
+      display.textContent = newLang === 'zh' ? '藏文' : '中文';
+
+      showToast(newLang === 'bo' ? '已切换至藏文' : '已切换至中文');
+    }
+
+    // ========== 清除缓存 ==========
+    function clearCache() {
+      if (confirm('确定要清除本地缓存数据吗？')) {
+        localStorage.clear();
+        showToast('缓存已清除');
+      }
+    }
+
+    // ========== 退出登录函数（覆盖components.js中的函数，使用内联模态框）==========
+    function logoutConfirm() {
+      document.getElementById('logout-modal').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function logoutAction() {
+      document.getElementById('logout-modal').classList.remove('active');
+      document.body.style.overflow = '';
+      showToast('已安全退出');
+      setTimeout(() => { window.location.href = '../login.html'; }, 500);
+    }
+  </script>
+</body>
+</html>
